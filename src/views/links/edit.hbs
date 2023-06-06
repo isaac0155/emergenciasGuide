@@ -1,0 +1,37 @@
+<div class="container p-4">
+    <div class="text-center p-3 mb-4">
+        <h1>Editar enlace</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form action="/links/edit/{{links.id}}" method="POST">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="title" placeholder="Titulo" autofocus value="{{links.title}}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="url" name="url" class="form-control" placeholder="URL" value="{{links.url}}" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="description" rows="2" class="form-control" placeholder="Descripción" required>{{links.description}}</textarea>
+                        </div>
+                        <div class="form-check form-switch form-group">
+                        {{#if links.publico}}
+                            <input class="form-check-input" type="checkbox" role="switch" id="publico" name="publico" checked>
+                        {{else}}
+                            <input class="form-check-input" type="checkbox" role="switch" id="publico" name="publico">
+                        {{/if}}
+                            <label class="form-check-label" for="publico">Hacer Link público.</label>
+                        </div>
+                        <div class="form-group d-grid gap-2">
+                            <button class="btn btn-success btn-block">
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

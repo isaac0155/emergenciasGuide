@@ -1,0 +1,53 @@
+<div class="container p-4 ">
+    <div class="text-center p-3 mb-4">
+        <h1>Links compartidos por la Comunidad</h1>
+    </div>
+    <div class="row bg-info p-2 text-dark bg-opacity-25 mb-3 " id="links">
+        <p class="text-center">Aquí aparecerá el útimo enlace compartido.</p>
+        <div class="col-md-3 mb-3 ">
+                <div class="card text-center border-info">
+                <div class="card-body">
+                    <a href="" target="_blank">
+                        <h3 class="card-title text-uppercase placeholder-glow">
+                            <span class="placeholder col-8 bg-secondary"></span>
+                        </h3>
+                    </a>
+                    <p class="m-s placeholder-glow">
+                        <span class="placeholder col-8 bg-secondary"></span>
+                    </p>
+                    <p class="m-s placeholder-glow">
+                        <span class="placeholder col-8 bg-secondary"></span>
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {{#each links}}
+            <div class="col-md-3 mb-3 ">
+                    <div class="card text-center border-info">
+                    <div class="card-body">
+                        <a href="{{url }} " target="_blank">
+                            <h3 class="card-title text-uppercase">
+                                {{title}}
+                            </h3>
+                        </a>
+                        <p class="m-s">
+                            {{description}}
+                        </p>
+                        <p class="form-control text-muted">Creado por {{fullname}}, {{timeago created_at }}</p>
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <div class="col-md-4 mx-auto">
+                <div class="card card-body text-center">
+                    <p>No se ha compratido enlaces aún.</p>
+                    <a href="/links" class="btn btn-success">Sé el primero en hacerlo ;)</a>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>
+<script src="/sockets/community/sockets.js"></script>
