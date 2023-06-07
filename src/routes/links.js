@@ -2,7 +2,7 @@ var ret = (io)=>
 {
     io.on("connection", (socket) => {
         socket.on('cliente:verifUser', async(user)=>{
-            let existe = await pool.query('select COUNT(a.username) as user from users a where a.username = ?', user)
+            let existe = await pool.query('select COUNT(a.usuario) as user from persona a where a.usuario = ?', user)
             existe[0].user == 0 ? socket.emit('server:usuarioLibre') : socket.emit('server:usuarioUsado');
         });
     });
