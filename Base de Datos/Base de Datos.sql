@@ -129,3 +129,38 @@ create table estadoEmergencia(
     latitud text,
     longitud text
 );
+
+create function verTipoUser(id int) returns text
+    begin
+        declare tipoUser text;
+        declare administrador int;
+        declare pacient int;
+        declare adminSucursal int;
+        set administrador = (select count(administradorGeneral.idPersona) from administradorGeneral, persona where administradorGeneral.idPersona = persona.idPersona and persona.idPersona = id);
+        set pacient = (select count(paciente.idPersona) from paciente, persona where paciente.idPersona = persona.idPersona and persona.idPersona = id);
+        set adminSucursal = (select count(administradorCentro.idPersona) from administradorCentro, persona where administradorCentro.idPersona = persona.idPersona and persona.idPersona = id);
+
+        if(administrador > 0)then
+            set tipoUser = 'adminGeneral';
+        end if;
+        if(pacient > 0)then
+            set tipoUser = 'paciente';
+        end if;
+        if(adminSucursal > 0)then
+            set tipoUser = 'adminSucursal';
+        end if;
+        return tipoUser;
+    end;
+
+create procedure verUsuario(id int)
+    begin
+        declare tipo text;
+        declare usuario int;
+        set usuario = (select count(persona.idPersona) from persona where persona.idPersona = id);
+        if(usuario > 0)then
+            set tipo = (select verTipoUser(id));
+            select persona.idPersona, persona.nombres, persona.apellidos, persona.carnet, persona.fechaNacimiento, persona.usuario, tipo as tipoUser from persona where persona.idPersona = id;
+        end if;
+
+        #return usuario;
+    end;
