@@ -8,20 +8,27 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {{#if user}}    
+                    {{#if user.adminGeneral}}
                         <li class="nav-item">
-                            <a class="nav-link position-relative" id="newLink" href="/links/community" role="button">
-                                Links de la Comunidad
+                            <a class="nav-link" style="color:#33E9FF">
+                                AG {{user.usuario}}
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/links/panel" role="button">
+                                Panel de control
+                            </a>
+                        </li>
+                    {{/if}}
                         <li class="nav-item">
                             <a class="nav-link" href="/links" role="button">
-                                Mis enlaces
+                                Directorio Medico
                             </a>
                         </li>
+                    {{#if user}}    
                         <li class="nav-item">
-                            <a class="nav-link" href="/links/add" role="button">
-                                Agregar nuevo enlace
+                            <a class="nav-link position-relative" id="newLink" href="/links/emergencias" role="button">
+                                Emergencias
                             </a>
                         </li>
                         <li class="nav-item">

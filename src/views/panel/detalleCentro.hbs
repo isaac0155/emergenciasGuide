@@ -1,0 +1,58 @@
+<div class="container p-4">
+    <div class="row">
+        <div class="col-md-4 mx-auto">
+            <div class="card-header text-center mb-5">
+                <h3>Detalle Centro de Salud {{centro.nombreCentro}}</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group text-center">
+                    <li class="list-group-item list-group-item-action">
+                        <p class="fs-6 mb-0">
+                          Nombre del Centro de Salud: <p class="fw-light mt-0 mb-0"> {{centro.nombreCentro}}</p> 
+                          Propietario registrado: <p class="fw-light mt-0 mb-0"> {{centro.propietario}} </p>
+                          Tenefono referancia: <p class="fw-light mt-0 mb-0"> {{centro.telefono}} </p>
+                          Nit asociado al Centro de Salud: <p class="fw-light mt-0 mb-5"> {{centro.nit}} </p>
+                        </p>
+                    </li>
+                </div>
+                {{!--  --}}
+                {{!--  --}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+                <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Registrar Nueva Sucursal</h5>
+                    <ol class="list-group list-group-numbered">
+                        <a href="/links/panel/centrosSalud/sucursal/nuevo/{{centro.idCentroSalud}}"class="btn btn-outline-primary mt-0">Registrar Nueva Sucursal</a>
+                    </ol>
+                </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Lista de Sucusales Registrados a este Centro de Salud</h5>
+                    <ol class="list-group ">
+                        {{#each sucursales}}
+                            <li class="list-group-item list-group-item-action">
+                                {{nombreCentro}}<br>
+                                {{latitud}}<br>
+                                {{longitud}}<br>
+                                {{detalleUbicacion}}<br>
+                                {{telefono1}}<br>
+                                {{telefono2}}<br>
+                                <br>
+                                <a href="/links/panel/centrosSalud/detalle/sucursal/{{idSucursal}}" class="btn btn-outline-primary mt-0">Ver detalles</a>
+                            </li>
+                        {{else}}
+                        <p>Aún no hay Sucursales Registradas</p>
+                        {{/each}}
+                    </ol>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

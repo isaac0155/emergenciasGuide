@@ -1,0 +1,125 @@
+<div class="container p-4 ">
+    <div class="text-center p-3 mb-4 align-items-center">
+        <h2>Gestión de Centros de Salud</h2>
+        <br>
+        <br>
+        <div class="row" style="display: flex;justify-content: center; align-items: center;">
+                <label class="col-form-label">Buscar NIT</label>
+            <div class="col-auto">
+            </div>
+            <div class="col-auto">
+                <input type="number" id="nit" name="nit" onkeyup=""class="form-control" placeholder="Nit a buscar">
+                {{!--  --}}
+                <div class="invalid-feedback" id="invalid"></div>
+                <div class="valid-feedback">
+                    NIT disponible.
+                </div>
+                {{!--  --}}
+            </div>
+            <div class="col-auto" >
+            </div>
+                <span id="passwordHelpInline" class="form-text">
+                    <button type="button" onclick="buscarNit()" id="buscarNit" class="btn btn-outline-success mt-0">Buscar</button>
+                </span>
+        </div>
+        <br>
+        <span class="badge text-bg-danger" style="display: none;">
+            <h6>Se ha eliminado exitosamente el NIT</h6>
+        </span>
+    </div>
+    {{!--  --}}
+    <div class="mb-5" style="">
+        <ol class="list-group">
+        </ol>
+    </div>
+    {{!--  --}}
+    <div class="row">
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Lista de NITs sin registrar</h5>
+                <ol class="list-group list-group-numbered">
+                    {{#each nits}}
+                        <li class="list-group-item list-group-item-action"> --> {{nit}}
+                            <div class="text-end">
+                                <a href="/links/panel/centrosSalud/nuevo/{{idNit}}"class="btn btn-outline-primary mt-0">Asignar</a>
+                            </div>
+                        </li>
+                    {{else}}
+                    <p>Aún no hay NITs sin registrar.</p>
+                    {{/each}}
+                </ol>
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Lista de NITs registrados</h5>
+                <ol class="list-group ">
+                    {{#each registrado}}
+                        <li class="list-group-item list-group-item-action">
+                            Nit: {{nit}}<br>
+                            El NIT ha sido registrado al centro de salud: {{nombreCentro}}<br>
+                            Propietario del centro de salud: {{propietario}}<br>
+                            <br>
+                            <a href="/links/panel/centrosSalud/detalle/{{idCentroSalud}}" class="btn btn-outline-primary mt-0">Ver detalles</a>
+                        </li>
+                    {{else}}
+                    <p>Aún no hay NITs sin registrar.</p>
+                    {{/each}}
+                </ol>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var btn = document.getElementById('buscarNit');
+    var inputNit = document.querySelector('input#nit');
+    var busqueda = document.querySelector('ol.list-group');
+
+    function buscarNit(){
+        inputNit.value = Number(inputNit.value);
+        //console.log(inputNit.value)
+        socket.emit('cliente:buscarNit', inputNit.value);
+    }
+    socket.on('server:nitEncontrado', (nit)=>{
+        //console.log(nit[0][0].nombreCentro)
+        busqueda.innerHTML = '';
+        busqueda.append(nitDiv(nit[0][0]));
+        
+    });
+    function nitDiv(nit){
+        const div = document.createElement("li");
+        if(nit.propietario){
+            div.className='list-group-item list-group-item-success list-group-item-action';
+            div.innerHTML = `
+                Nit: ${nit.nit}<br>
+                El NIT ha sido registrado al centro de salud: ${nit.nombreCentro}<br>
+                Propietario del centro de salud: ${nit.propietario}<br>
+                Sucursales asignadas: ${nit.sucursales}<br>
+                <br>
+                <a href="/links/panel/centrosSalud/detalle" class="btn btn-outline-success">Ver Detalles</a>
+            `;
+        }else{
+            if(!nit.nit){
+                div.innerHTML = `
+                    Ninguna coincidencia para ${inputNit.value}.
+                `;
+                div.className='list-group-item list-group-item-danger list-group-item-action';
+            }else{
+
+                div.innerHTML = `
+                    NIT: ${nit.nit}<br>
+                    ESTE NIT NO FUE ASIGNADO A NINGÚN CENTRO DE SALUD
+                    <br>
+                    <a href="/links/panel/centrosSalud/nuevo"class="btn btn-outline-success">Asignar</a>
+                `;
+                div.className='list-group-item list-group-item-warning list-group-item-action';
+            }
+        }
+        return div;
+    }
+    
+</script>

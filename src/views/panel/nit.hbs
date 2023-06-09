@@ -1,0 +1,114 @@
+<div class="container p-4 ">
+    <div class="text-center p-3 mb-4 align-items-center">
+        <h2>Gestión de NITs de Centros de Salud</h2>
+        <br>
+        <br>
+        <div class="row" style="display: flex;justify-content: center; align-items: center;">
+                <label class="col-form-label">Agregar nuevo NIT</label>
+            <div class="col-auto">
+            </div>
+            <div class="col-auto">
+                <input type="number" id="nit" name="nit" onkeyup="verificarNit()"class="form-control" placeholder="Ingrese el Nit nuevo">
+                {{!--  --}}
+                <div class="invalid-feedback" id="invalid"></div>
+                <div class="valid-feedback">
+                    NIT disponible.
+                </div>
+                {{!--  --}}
+            </div>
+            <div class="col-auto" >
+            </div>
+                <span id="passwordHelpInline" class="form-text">
+                    <button type="button" onclick="agregarNit()" id="agregar" class="btn btn-outline-success mt-0" disabled>Agregar</button>
+                </span>
+        </div>
+        <br>
+        <span class="badge text-bg-danger" style="display: none;">
+            <h6>Se ha eliminado exitosamente el NIT</h6>
+        </span>
+    </div>
+    <div class="" style="">
+        <ol class="list-group list-group-numbered">
+            {{#each nits}}
+                <li class="list-group-item list-group-item-action"> --> {{nit}}
+                    <div class="text-end">
+                        <button type="button" onclick="eliminar({{idNit}})" class="btn btn-outline-danger mt-0">Eliminar</button>
+                    </div>
+                </li>
+            {{else}}
+            <p>Aún no hay NITs registrados.</p>
+            {{/each}}
+        </ol>
+    </div>
+</div>
+<script>
+    var btn = document.getElementById('agregar');
+    var invalid = document.getElementById('invalid');
+    var nit = document.getElementById('nit');
+    var contenido = document.querySelector('ol.list-group.list-group-numbered');
+    
+    function verificarNit(){
+        nit.value = Number(nit.value);
+        if(nit.value.length > 4){
+            socket.emit('cliente:verifNit', nit.value);
+        }else{
+            invalid.innerHTML = "NIT muy corto";
+            nit.className = 'form-control is-invalid';
+            btn.disabled = true;
+        }
+        //console.log(nit.value);
+    }
+    function agregarNit(){
+        nit.value = Number(nit.value);
+        socket.emit('cliente:registrarNit', nit.value);
+    }
+    function nitDiv(id, nit, newNit){
+        const div = document.createElement("li");
+        div.innerHTML = `
+            --> ${nit}
+            <div class="text-end">
+                <button type="button" onclick="eliminar(${id})" class="btn btn-outline-danger">Eliminar</button>
+            </div>
+        `;
+        if(nit == newNit){
+            div.className='list-group-item list-group-item-success list-group-item-action';
+            div.innerHTML += `Nit nuevo Agregado Exitosamente`
+        }else{
+            div.className='list-group-item list-group-item-action';
+        }
+        
+        return div;
+    }
+    function eliminar(id){
+        socket.emit('cliente:eliminarNit', id);
+    }
+
+    //sockets
+    socket.on('server:nitLibre', () => {
+        //invalid.innerHTML = "NIT disponible.";
+        nit.className = 'form-control is-valid';
+        btn.disabled = false;
+    });
+    socket.on('server:nitUsado', () => {
+        invalid.innerHTML = "Este NIT ya EXISTE, usa otro.";
+        nit.className = 'form-control is-invalid';
+        btn.disabled = true;
+    });
+    socket.on('server:nitRegistrado', (nit1, nits)=>{
+
+        var span = document.querySelector('.badge.text-bg-danger');
+        if(nit1 == null){
+            span.style.display = '';
+        }else{
+            span.style.display = 'none';
+        }
+        contenido.innerHTML = "";
+        nits.forEach(async function (element, index){
+            contenido.append(nitDiv(element.idNit, element.nit, nit1));
+        });
+        nit.value='';
+        invalid.innerHTML = "NIT muy corto";
+        nit.className = 'form-control is-invalid';
+        btn.disabled = true;
+    });
+</script>

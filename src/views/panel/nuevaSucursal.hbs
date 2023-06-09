@@ -1,0 +1,109 @@
+<div class="container p-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card-header text-center">
+                <h3>Registrar Nueva Sucursal para el centro: {{id}}</h3>
+            </div>
+            <div class="card-body">
+                <form action="/links/panel/centrosSalud/sucursal/nuevo/{{id}}" method="post">
+                    <div class="form-group">
+                        <label for="" class="form-label">Nombre de la Sucursal</label>
+                        <input type="text" name="nombre" placeholder="Nombre Sucursal" class="form-control" autofocus required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Latitud</label>
+                        <input type="text" name="latitud" id="lat" placeholder="Seleccione en el Mapa la Ubicación" class="form-control" disabled  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Longitud</label>
+                        <input type="text" name="longitud" id="long" placeholder="Seleccione en el Mapa la Ubicación" class="form-control" disabled required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Detalle de la Ubicación</label>
+                        <input type="text" name="detalle" id="ref" placeholder="Referencias ubicación" class="form-control"  required>
+                    </div><br>
+                    <div id="dragend"></div>
+                    <div id="map" style="height: 300px; width: 100%;">
+                        Aqui va un mapa
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Numero de Telefono de Recepción</label>
+                        <input type="text" name="telefono1" placeholder="Telefono de Recepción" class="form-control"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Numero de Telefono de Emergencias</label>
+                        <input type="text" name="telefono2" placeholder="Numero de Telefono de Emergencias" class="form-control"  required>
+                    </div>
+                    
+                    <div class="form-group d-grid gap-2" >
+                        <button class="btn btn-success btn-blok" id="btn">Registrar sucursal</button>
+                    </div>
+
+                </form>
+            </div>
+            <br>
+        </div>
+            
+    </div>
+</div>
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDj9Zues1ltWBLzLDZ-5v5JzvRSHkg9bBE&callback=initMap&v=weekly" defer></script>
+ <script>
+    //let map;
+    var latitud = document.querySelector('input#lat')
+    var longitud = document.querySelector('input#long')
+    var referen = document.querySelector('input#ref')
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -17.396593601116376, lng: -66.16100666581964},
+            zoom: 14,
+            disableDefaultUI: true
+        });
+        getLocation()
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        map.setCenter(new google.maps.LatLng(lat, lng));
+        }
+
+        var marker = null;
+        google.maps.event.addListener(map, "click", function(ele) {
+            if (marker) {
+                marker.setMap(null);
+            }
+            marker = new google.maps.Marker({
+                position: ele.latLng,
+                map: map
+            });
+            
+            var lat = marker.getPosition().lat();
+            var lng = marker.getPosition().lng();
+
+            var geocoder = new google.maps.Geocoder();
+            var latLng = new google.maps.LatLng(lat, lng);
+
+            geocoder.geocode({ 'latLng': latLng }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        var address = results[0].formatted_address;
+                        referen.value = address;
+                    }
+                } else {
+                    console.log("Geocoder failed due to: " + status);
+                }
+            });
+            latitud.value = lat;
+            longitud.value = lng;
+        })
+    }
+
+    window.initMap = initMap;
+ </script>
+
