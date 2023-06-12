@@ -87,6 +87,7 @@
     socket.on('server:nitEncontrado', (nit)=>{
         //console.log(nit[0][0].nombreCentro)
         busqueda.innerHTML = '';
+        //console.log(nit[0][0])
         busqueda.append(nitDiv(nit[0][0]));
         
     });
@@ -100,7 +101,7 @@
                 Propietario del centro de salud: ${nit.propietario}<br>
                 Sucursales asignadas: ${nit.sucursales}<br>
                 <br>
-                <a href="/links/panel/centrosSalud/detalle" class="btn btn-outline-success">Ver Detalles</a>
+                <a href="/links/panel/centrosSalud/detalle/${nit.idCentroSalud}" class="btn btn-outline-success">Ver Detalles</a>
             `;
         }else{
             if(!nit.nit){
@@ -114,7 +115,7 @@
                     NIT: ${nit.nit}<br>
                     ESTE NIT NO FUE ASIGNADO A NINGÚN CENTRO DE SALUD
                     <br>
-                    <a href="/links/panel/centrosSalud/nuevo"class="btn btn-outline-success">Asignar</a>
+                    <a href="/links/panel/centrosSalud/nuevo/${nit.idNit}"class="btn btn-outline-success">Asignar</a>
                 `;
                 div.className='list-group-item list-group-item-warning list-group-item-action';
             }

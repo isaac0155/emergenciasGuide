@@ -1,5 +1,5 @@
-create database prueba;
-use prueba;
+create database emergenciasguide;
+use emergenciasguide;
 create table persona
 (
     idPersona       int auto_increment
@@ -254,7 +254,7 @@ begin
 
         #return usuario;
     end;
-use prueba;
+use emergenciasguide;
 INSERT INTO nitcentro (idNit, nit) VALUES (100, '987654321');
 INSERT INTO nitcentro (idNit, nit) VALUES (101, '234567890');
 INSERT INTO nitcentro (idNit, nit) VALUES (102, '678901234');

@@ -1,3 +1,5 @@
+const { PORT } = require('../config');
+
 var ret = (io)=>
 {
     io.on("connection", (socket) => {
@@ -117,7 +119,14 @@ var ret = (io)=>
     });
     router.get('/panel/centrosSalud/sucursal/nuevo/:id', isLoggedIn, async (req, res) => {
         const { id } = req.params;
-        res.render('panel/nuevaSucursal', {id})
+        var centro = await pool.query('select * from centroSalud where idCentroSalud = ?', id);
+        res.render('panel/nuevaSucursal', {id, centro:centro[0]})
+    });
+    router.post('/panel/centrosSalud/sucursal/nuevo/:id', isLoggedIn, async (req, res) => {
+        const { id } = req.params;
+        const { latitud, longitud } = req.body;
+        console.log(latitud, longitud)
+        //res.render('panel/nuevaSucursal', {id})
     });
     
     /*router.get('/delete/:id', isLoggedIn,async(req, res)=>{
