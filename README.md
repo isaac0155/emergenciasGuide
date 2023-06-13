@@ -1,6 +1,6 @@
 # Medical Emergency Assistance Website
 
-![Website Logo](https://i.ibb.co/R6Cwj4r/clinica-de-salud.png)
+![Website Logo](https://i.ibb.co/R6Cwj4r/clinica-de-salud.png){:height="200px" width="200px"}
 
 Welcome to our innovative platform that provides immediate assistance during medical emergencies. Our website, built with Node.js and Express.js, is designed to connect you with the necessary resources and support when you need it the most. Whether you require an ambulance or information about nearby health centers, we are here to help.
 
@@ -65,6 +65,6 @@ This project is licensed under the [MIT License](link_to_license). You are free 
 
 ## Contact
 
-If you have any questions, suggestions, or feedback, please reach out to our team at [contact@example.com](mailto:herreraisaac334@gmail.com). We would be delighted to assist you and improve our platform based on your valuable input.
+If you have any questions, suggestions, or feedback, please reach out to our team at [herreraisaac334@gmail.com](mailto:herreraisaac334@gmail.com). We would be delighted to assist you and improve our platform based on your valuable input.
 
 Thank you for choosing our website as your go-to resource during medical emergencies. We are dedicated to ensuring your safety and well-being. Stay safe!
