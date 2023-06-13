@@ -87,17 +87,13 @@
                                 {{/each}}
                                 </tbody>
                             </table>
-                            <div class="mt-3">
-                                <div class="col-auto">
-                                    <label for="int" class="visually">Ingrese el Nombre de Usuario de alguien previamente registrado en el sistema para dar permisos de Administrador.</label>
-                                    <input type="text" class="form-control" id="int" placeholder="Ingrese un Nombre de Usuario">
-                                </div>
-                                <div class="col-auto">
-                                    <div class="d-grid gap-2 mt-0">
-                                        <button class="btn btn-success mb-0" onclick="buscarPersona()">Buscar Persona</button>
-                                    </div>
-                                </div>
+                            <div class="mb-3">
                             </div>                        
+                                <div class=" input-group-sm">
+                                    <label for="int" class="visually">Ingrese el Nombre de Usuario de alguien previamente registrado en el sistema para dar permisos de Administrador.</label>
+                                    <input type="text" class="form-control" style="margin-top: -5;" id="int" placeholder="Ingrese un Nombre de Usuario">
+                                    <button class="btn btn-success mb-0" onclick="buscarPersona()">Buscar Persona</button>
+                                </div>
                             <div class="mt-2 busquedaPersona">
                                 
                             </div>                        
@@ -169,29 +165,23 @@
                         <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Aspecialidades Asignadas</h5>
+                            <p class="fw-light">Coloca el puntero del mouse o presiona prolongadamente para ver el detalle de la Especialidad.
+                            </p>
                             <table class="table table-hover">
                                 <tbody>
+                                    {{#each especialidades}}
                                     <tr>
-                                        <th class="fw-normal" scope="row">Nombre Sucursal Centro Salud</th>
-                                        <td class="fw-light">{{sucursal.nombre}}
-                                        </td>
+                                        <td class="fw-normal" title="{{detalle}}">{{nombre}}</td>
                                     </tr>
-                                    <tr>
-                                        <th class="fw-normal"scope="row">Detalle de Ubicación</th>
-                                        <td class="fw-light">{{sucursal.detalleUbicacion}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="fw-normal"scope="row">Telefono de Contacto</th>
-                                        <td class="fw-light">{{sucursal.telefono1}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th  class="fw-normal"scope="row">Telefono de Emergencias</th>
-                                        <td class="fw-light">{{sucursal.telefono2}}</td>
-                                    </tr>
+                                    {{else}} 
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        No hay Especialidades asignadas a este centro.
+                                    </div>
+                                    {{/each}}
                                 </tbody>
                             </table>
                             <div class="d-grid gap-2 mt-0">
-                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/modificar/{{sucursal.idSucursal}}" >Modificar Detalles de Sucursal</a>   
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/especialidad/gestionar/{{sucursal.idSucursal}}" >Gestionar Especialidades</a>
                             </div>
                         </div>
                         </div>
@@ -200,29 +190,23 @@
                         <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Servicios Asignados</h5>
+                            <p class=" fw-light">Coloca el puntero del mouse o presiona prolongadamente para ver el detalle del Servicio.
+                            </p>
                             <table class="table table-hover">
                                 <tbody>
+                                    {{#each servicios}}
                                     <tr>
-                                        <th class="fw-normal" scope="row">Nombre Sucursal Centro Salud</th>
-                                        <td class="fw-light">{{sucursal.nombre}}
-                                        </td>
+                                        <td class="fw-normal" title="{{detalle}}">{{nombre}}</td>
                                     </tr>
-                                    <tr>
-                                        <th class="fw-normal"scope="row">Detalle de Ubicación</th>
-                                        <td class="fw-light">{{sucursal.detalleUbicacion}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th class="fw-normal"scope="row">Telefono de Contacto</th>
-                                        <td class="fw-light">{{sucursal.telefono1}}</td>
-                                    </tr>
-                                    <tr>
-                                        <th  class="fw-normal"scope="row">Telefono de Emergencias</th>
-                                        <td class="fw-light">{{sucursal.telefono2}}</td>
-                                    </tr>
+                                    {{else}} 
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        No hay Servicios asignados a este centro.
+                                    </div>
+                                    {{/each}}
                                 </tbody>
                             </table>
                             <div class="d-grid gap-2 mt-0">
-                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/modificar/{{sucursal.idSucursal}}" >Modificar Detalles de Sucursal</a>   
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/servicio/gestionar/{{sucursal.idSucursal}}" >Gestionar Servicios</a>
                             </div>
                         </div>
                         </div>
@@ -334,14 +318,27 @@
     socket.on('server:buscarPersona', async (personas) => {
         var resultadoBusqueda = document.querySelector('div.busquedaPersona');
         resultadoBusqueda.innerHTML='';
-        personas.forEach(function(element, index){
-            resultadoBusqueda.append(mostrarPersona(element));
-        })
+        if(personas.length > 0){
+            personas.forEach(function(element, index){
+                resultadoBusqueda.append(mostrarPersona(element));
+            })
+        }else{
+            resultadoBusqueda.append(sinResult());
+        }
    })
     socket.on('server:eliminarAdminSucursal', async () => {
         location.reload();
    })
-
+    function sinResult(){
+        var div = document.createElement('div')
+        div.className='alert alert-danger';
+        div.innerHTML = `
+            No hay resultados para este Nombre de Usuario.
+            Es posible que no se haya registrado el usuario que buscas.
+            O que el usuario que buscas tenga permisos de Administrador General.
+        `;
+        return div; 
+    }
     function mostrarPersona(persona){
         var sucursal = {{sucursal.idSucursal}}
         var div = document.createElement('div')

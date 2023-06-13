@@ -67,7 +67,11 @@ var ret = (io) => {
         socket.on('cliente:eliminarAdminSucursal', async (idPersona, idSucursal) => {
             //console.log(idPersona, idSucursal);
             await pool.query('delete from administradorcentro where idSucursal = ? and idPersona = ?;', [idSucursal, idPersona]);
-            await pool.query('insert into paciente set idPersona = ?;', idPersona)
+            var adminC = await pool.query('select count(*) as adminC from administradorcentro where idPersona = ?;', idPersona);
+            //console.log(adminC[0].adminC)
+            if (adminC[0].adminC == 0){
+                await pool.query('insert into paciente set idPersona = ?;', idPersona)
+            }
             // console.log(personas, 'perosnas');
             socket.emit('server:eliminarAdminSucursal');
         });
@@ -78,6 +82,26 @@ var ret = (io) => {
             await pool.query('delete from horario where idHorario = ? ;', idHorario);
             // console.log(personas, 'perosnas');
             socket.emit('server:eliminarHorario');
+        });
+        
+        socket.on('cliente:nuevaEspecialidad', async (idEspecialidad, idSucursal) => {
+            await pool.query('insert into especialidadsucursal set ?;', {idEspecialidad, idSucursal});
+            socket.emit('server:reload');
+        });
+
+        socket.on('cliente:eliminarEspecialidad', async (idEspecialidadSucursal) => {
+            await pool.query('delete from especialidadsucursal where idEspecialidadSucursal = ?;', idEspecialidadSucursal);
+            socket.emit('server:reload');
+        });
+
+        socket.on('cliente:nuevoServicio', async (idServicio, idSucursal) => {
+            await pool.query('insert into serviciosucursal set ?;', {idServicio, idSucursal});
+            socket.emit('server:reload');
+        });
+
+        socket.on('cliente:eliminarServicio', async (idServicioSucursal) => {
+            await pool.query('delete from serviciosucursal where idServicioSucursal = ?;', idServicioSucursal);
+            socket.emit('server:reload');
         });
     });
 
@@ -187,8 +211,11 @@ var ret = (io) => {
             var idHorario = sucursal[0].idHorario;
             horario = await pool.query('select * from horario where idHorario = ?', idHorario)
         }
+        var especialidades = await pool.query('select a.* from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ?;', Number(id))
+        var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
         //console.log(horario[0])
-        res.render('panel/detalleSucursal', {sucursal:sucursal[0], admin, horario:horario[0]})
+        //res.send(especialidades)
+        res.render('panel/detalleSucursal', {sucursal:sucursal[0], admin, horario:horario[0], especialidades, servicios})
     });
     
     router.get('/panel/centrosSalud/sucursal/modificar/:id', isLoggedIn, async (req, res) => {
@@ -283,6 +310,26 @@ var ret = (io) => {
         await pool.query('update horario set ? where idHorario = ?', [horario, Number(req.body.idHorario)]);
         req.flash('success', 'Horario Modificado correctamente.');
         res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
+    });
+
+    router.get('/panel/centrosSalud/sucursal/especialidad/gestionar/:id', isLoggedIn, async (req, res) => {
+        const { id } = req.params;
+        var idSucursal = Number(id)
+        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
+        var especialidadesSucursal = await pool.query('select a.*, b.idEspecialidadSucursal from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ? ORDER BY b.idEspecialidadSucursal DESC;', idSucursal)
+        var especialidades = await pool.query('select a.* from especialidad a where (select count(*) from especialidadsucursal b where b.idEspecialidad = a.idEspecialidad and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
+        //res.send({ sucursal: sucursal[0],especialidadesSucursal, especialidades })
+        res.render('panel/gestionarEspecilidadSucursal', { sucursal: sucursal[0], especialidadesSucursal, especialidades })
+    });
+
+    router.get('/panel/centrosSalud/sucursal/servicio/gestionar/:id', isLoggedIn, async (req, res) => {
+        const { id } = req.params;
+        var idSucursal = Number(id)
+        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
+        var serviciosSucursal = await pool.query('select a.*, b.idServicioSucursal from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ? ORDER BY b.idServicioSucursal DESC;', idSucursal)
+        var servicios = await pool.query('select a.* from servicio a where (select count(*) from serviciosucursal b where b.idServicio = a.idServicio and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
+        //res.send({ sucursal: sucursal[0], serviciosSucursal, servicios })
+        res.render('panel/gestionarServicioSucursal', { sucursal: sucursal[0], serviciosSucursal, servicios })
     });
 
     /*router.get('/delete/:id', isLoggedIn,async(req, res)=>{
