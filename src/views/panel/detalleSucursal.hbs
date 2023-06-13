@@ -2,16 +2,17 @@
     <div class="row">
         
         <div class="card">
-            <div class="card-header text-center p-5">
+            <div class="text-center pt-5">
                 <h1>{{sucursal.nombre}}</h1>
-                <h6>de {{sucursal.nombreCentro}}</h6>
+                <h6 class="text-success">de {{sucursal.nombreCentro}}</h6>
             </div>
             <div class="card-body">
-                <div id="map" style="height: 400px; width: 100%;">
+                <div id="map" style="height: 300px; width: 100%;">
                     Revise su conexión a intenet.
                 </div>
+                <a class="link-underline-dark" target="_blank" href="https://maps.google.com/?q={{sucursal.latitud}},{{sucursal.longitud}}">Abrir ubicación el Google Maps</a>
             </div>
-            <div class="activacion" id="activacion">
+            <div class="activacion p-3" id="activacion">
                 {{#if sucursal.activo}}
                 <div class="alert alert-success text-center">
                     Sucursal Activa y visible para todos los Usuarios.
@@ -24,8 +25,6 @@
                 </div>
             </div>
             <div class="card-body">
-
-                <a class="link-underline-dark" target="_blank" href="https://maps.google.com/?q={{sucursal.latitud}},{{sucursal.longitud}}">Abrir ubicación el Google Maps</a>
                 {{!--  --}}
                 <div class="row mt-3">
                     <div class="col-sm-6 mb-3 mb-sm-0">

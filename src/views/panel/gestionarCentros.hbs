@@ -58,13 +58,19 @@
                 <h5 class="card-title">Lista de NITs registrados</h5>
                 <ol class="list-group ">
                     {{#each registrado}}
-                        <li class="list-group-item list-group-item-action">
-                            Nit: {{nit}}<br>
-                            El NIT ha sido registrado al centro de salud: {{nombreCentro}}<br>
-                            Propietario del centro de salud: {{propietario}}<br>
-                            Sucursales: {{sucursal}}
+                        <li class="list-group-item list-group-item-action border-success">
+                            <h5 class="card-title text-success">Nit : {{nit}}
+
+                            <hr>
+                            </h5>
+                            Centro de Salud : {{nombreCentro}}<br>
+                            Propietario : {{propietario}}<br>
+                            Sucursales : {{sucursal}}
                             <br>
-                            <a href="/links/panel/centrosSalud/detalle/{{idCentroSalud}}" class="btn btn-outline-primary mt-0">Ver detalles</a>
+                            <br>
+                            <div class="d-grid gap-2">
+                                <a href="/links/panel/centrosSalud/detalle/{{idCentroSalud}}" class="btn btn-outline-success mt-0">Ver detalles</a>
+                            </div>
                         </li>
                     {{else}}
                     <p>Aún no hay NITs sin registrar.</p>
