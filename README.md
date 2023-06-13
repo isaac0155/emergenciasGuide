@@ -1,6 +1,6 @@
 # Medical Emergency Assistance Website
 
-![Website Logo](https://i.ibb.co/R6Cwj4r/clinica-de-salud.png){:height="100px" width="100px"}
+<img src="https://i.ibb.co/R6Cwj4r/clinica-de-salud.png" alt="Website Logo" width="100px" height="100px">
 
 Welcome to our innovative platform that provides immediate assistance during medical emergencies. Our website, built with Node.js and Express.js, is designed to connect you with the necessary resources and support when you need it the most. Whether you require an ambulance or information about nearby health centers, we are here to help.
 
