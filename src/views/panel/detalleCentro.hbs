@@ -25,33 +25,58 @@
                 <div class="card-body">
                     <h5 class="card-title">Registrar Nueva Sucursal</h5>
                     <ol class="list-group list-group-numbered">
-                        <a href="/links/panel/centrosSalud/sucursal/nuevo/{{centro.idCentroSalud}}"class="btn btn-outline-primary mt-0">Registrar Nueva Sucursal</a>
+                        <a href="/links/panel/centrosSalud/sucursal/nuevo/{{centro.idCentroSalud}}"class="btn btn-success mt-0">Registrar Nueva Sucursal</a>
                     </ol>
                 </div>
                 </div>
             </div>
             <div class="col-sm-6">
-                <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Lista de Sucusales Registrados a este Centro de Salud</h5>
-                    <ol class="list-group ">
-                        {{#each sucursales}}
-                            <li class="list-group-item list-group-item-action">
-                                {{nombreCentro}}<br>
-                                {{latitud}}<br>
-                                {{longitud}}<br>
-                                {{detalleUbicacion}}<br>
-                                {{telefono1}}<br>
-                                {{telefono2}}<br>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Lista de Sucusales Registrados a este Centro de Salud</h5>
+                    </div>
+                </div>
+                {{#each sucursales}}   
+                <div class="card mb-3" style="">
+                    <div class="row g-0">
+                        <div class="col-md-4" style="display: flex; justify-content: center;align-items: center;">
+                            <img src="/img/imgenCliente/{{image}}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{nombre}}</h5>
+                            <p class="card-text">
+                                Ubicación : {{detalleUbicacion}}<br>
+                                Telefonos : {{telefono1}} - {{telefono2}}<br>
+                                {{#if adminSucursal}}
+                                Administradores : {{adminSucursal}}
+                                {{else}}
+                                <p class="fs-6 fw-normal badge bg-danger">No hay Administradores registrados.</p>
+                                {{/if}}
                                 <br>
-                                <a href="/links/panel/centrosSalud/detalle/sucursal/{{idSucursal}}" class="btn btn-outline-primary mt-0">Ver detalles</a>
-                            </li>
-                        {{else}}
-                        <p>Aún no hay Sucursales Registradas</p>
-                        {{/each}}
-                    </ol>
+                                {{#if idHorario}}
+                                    Horarios : Sí
+                                {{else}}
+                                    <p class="fs-6 fw-normal badge bg-danger">No hay horarios registrados.</p>
+                                {{/if}}
+                                <br>
+                                {{#if activo}}
+                                    Sucursal Activa, visible para todos.
+                                {{else}}
+                                    <p class="fs-6 fw-normal badge bg-danger">Esta Sucursal no es visible.</p>
+                                {{/if}}
+                                <br>
+                            </p>
+                            <div class="d-grid gap-2">
+                                <a href="/links/panel/centrosSalud/detalle/sucursal/{{idSucursal}}" class="btn btn-outline-primary mt-0 mb-0">Ver detalles</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
                 </div>
-                </div>
+                {{else}}
+                <p>Aún no hay Sucursales Registradas</p>
+                {{/each}}
             </div>
         </div>
     </div>

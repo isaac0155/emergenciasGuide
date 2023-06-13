@@ -1,0 +1,318 @@
+<div class="container p-4">
+    <div class="row">
+        
+        <div class="card">
+            <div class="card-header text-center">
+                <h3>Nuevo Horario para {{sucursal.nombre}}</h3>
+                <h6>de {{sucursal.nombreCentro}}</h6>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Horarios de Atención</h5>
+                {{!--  --}}
+                <form action="/links/panel/centrosSalud/sucursal/horario/nuevo/{{sucursal.idSucursal}}" method="post">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Día</th>
+                                <th scope="col">Cerrado</th>
+                                <th scope="col">Abierto</th>
+                                <th scope="col">Abierto 24 H.</th>
+                                <th scope="col">Abre a hrs.</th>
+                                <th scope="col">Cierra a hrs.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                        <th class="fw-normal" scope="row">Lunes</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lunes-Cerrado" id="lunesCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lunes-Abierto" id="lunesAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lunes-24" id="lunes24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeLunesAbre" name="lunes-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeLunesCierra"name="lunes-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th class="fw-normal"scope="row">Martes</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="martes-Cerrado" id="martesCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="martes-Abierto" id="martesAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="martes-24" id="martes24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeMartesAbre"name="martes-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeMartesCierra"name="martes-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th class="fw-normal"scope="row">Miercoles</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="miercoles-Cerrado" id="miercolesCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="miercoles-Abierto" id="miercolesAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="miercoles-24" id="miercoles24">
+                                            </div>
+                                        </td>
+                        
+                                        <td class="fw-normal">
+                                            <input id="timeMiercolesAbre" name="miercoles-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeMiercolesCierra" name="miercoles-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th  class="fw-normal"scope="row">Jueves</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="jueves-Cerrado" id="juevesCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="jueves-Abierto" id="juevesAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="jueves-24" id="jueves24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeJuevesAbre" name="jueves-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeJuevesCierra" name="jueves-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th  class="fw-normal"scope="row">Viernes</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="viernes-Cerrado" id="viernesCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="viernes-Abierto" id="viernesAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="viernes-24" id="viernes24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeViernesAbre" name="viernes-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeViernesCierra" name="viernes-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th  class="fw-normal"scope="row">Sábado</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sabado-Cerrado" id="sabadoCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sabado-Abierto" id="sabadoAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="sabado-24" id="sabado24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeSabadoAbre" name="sabado-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeSabadoCierra" name="sabado-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th  class="fw-normal"scope="row">Domingo</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="domingo-Cerrado" id="domingoCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="domingo-Abierto" id="domingoAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="domingo-24" id="domingo24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeDomingoAbre" name="domingo-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeDomingoCierra" name="domingo-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                        </td>
+                            </tr>
+                            <tr>
+                                        <th  class="fw-normal"scope="row">Feriados</th>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="feriados-Cerrado" id="feriadoCerrado" checked>
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="feriados-Abierto" id="feriadoAbierto">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="feriados-24" id="feriado24">
+                                            </div>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeFeriadoAbre" name="feriado-Abre" class="form-control" type="time" value="08:00" disabled required>
+                                        </td>
+                                        <td class="fw-normal">
+                                            <input id="timeFeriadoCierra" name="feriado-Cierra" class="form-control" type="time" value="16:30" disabled required>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button class="btn btn-success" type="submit" >Guardar nuevo Horario</button>
+                    </div>
+                </form>
+                {{!--  --}}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var lunesCerrado = document.querySelector('input#lunesCerrado');
+    var martesCerrado = document.querySelector('input#martesCerrado');
+    var miercolesCerrado = document.querySelector('input#miercolesCerrado');
+    var juevesCerrado = document.querySelector('input#juevesCerrado');
+    var viernesCerrado = document.querySelector('input#viernesCerrado');
+    var sabadoCerrado = document.querySelector('input#sabadoCerrado');
+    var domingoCerrado = document.querySelector('input#domingoCerrado');
+    var feriadoCerrado = document.querySelector('input#feriadoCerrado');
+    
+    var lunesAbierto = document.querySelector('input#lunesAbierto');
+    var martesAbierto = document.querySelector('input#martesAbierto');
+    var miercolesAbierto = document.querySelector('input#miercolesAbierto');
+    var juevesAbierto = document.querySelector('input#juevesAbierto');
+    var viernesAbierto = document.querySelector('input#viernesAbierto');
+    var sabadoAbierto = document.querySelector('input#sabadoAbierto');
+    var domingoAbierto = document.querySelector('input#domingoAbierto');
+    var feriadoAbierto = document.querySelector('input#feriadoAbierto');
+    
+    var lunes24 = document.querySelector('input#lunes24');
+    var martes24 = document.querySelector('input#martes24');
+    var miercoles24 = document.querySelector('input#miercoles24');
+    var jueves24 = document.querySelector('input#jueves24');
+    var viernes24 = document.querySelector('input#viernes24');
+    var sabado24 = document.querySelector('input#sabado24');
+    var domingo24 = document.querySelector('input#domingo24');
+    var feriado24 = document.querySelector('input#feriado24');
+    
+    var timeLunesAbre = document.querySelector('input#timeLunesAbre');
+    var timeMartesAbre = document.querySelector('input#timeMartesAbre');
+    var timeMiercolesAbre = document.querySelector('input#timeMiercolesAbre');
+    var timeJuevesAbre = document.querySelector('input#timeJuevesAbre');
+    var timeViernesAbre = document.querySelector('input#timeViernesAbre');
+    var timeSabadoAbre = document.querySelector('input#timeSabadoAbre');
+    var timeDomingoAbre = document.querySelector('input#timeDomingoAbre');
+    var timeFeriadoAbre = document.querySelector('input#timeFeriadoAbre');
+    
+    var timeLunesCierra = document.querySelector('input#timeLunesCierra');
+    var timeMartesCierra = document.querySelector('input#timeMartesCierra');
+    var timeMiercolesCierra = document.querySelector('input#timeMiercolesCierra');
+    var timeJuevesCierra = document.querySelector('input#timeJuevesCierra');
+    var timeViernesCierra = document.querySelector('input#timeViernesCierra');
+    var timeSabadoCierra = document.querySelector('input#timeSabadoCierra');
+    var timeDomingoCierra = document.querySelector('input#timeDomingoCierra');
+    var timeFeriadoCierra = document.querySelector('input#timeFeriadoCierra');
+
+
+
+    lunesCerrado.addEventListener("change", function(){validaCheckbox(false, lunesCerrado, timeLunesAbre, timeLunesCierra, lunesAbierto, lunes24)}, false);
+    martesCerrado.addEventListener("change", function(){validaCheckbox(false, martesCerrado, timeMartesAbre, timeMartesCierra, martesAbierto, martes24)}, false);
+    miercolesCerrado.addEventListener("change", function(){validaCheckbox(false, miercolesCerrado, timeMiercolesAbre, timeMiercolesCierra, miercolesAbierto, miercoles24)}, false);
+    juevesCerrado.addEventListener("change", function(){validaCheckbox(false, juevesCerrado, timeJuevesAbre, timeJuevesCierra, juevesAbierto, jueves24)}, false);
+    viernesCerrado.addEventListener("change", function(){validaCheckbox(false, viernesCerrado, timeViernesAbre, timeViernesCierra, viernesAbierto, viernes24)}, false);
+    sabadoCerrado.addEventListener("change", function(){validaCheckbox(false, sabadoCerrado, timeSabadoAbre, timeSabadoCierra, sabadoAbierto, sabado24)}, false);
+    domingoCerrado.addEventListener("change", function(){validaCheckbox(false, domingoCerrado, timeDomingoAbre, timeDomingoCierra, domingoAbierto, domingo24)}, false);
+    feriadoCerrado.addEventListener("change", function(){validaCheckbox(false, feriadoCerrado, timeFeriadoAbre, timeFeriadoCierra, feriadoAbierto, feriado24)}, false);
+    
+    lunesAbierto.addEventListener("change", function(){validaCheckbox(true, lunesAbierto, timeLunesAbre, timeLunesCierra, lunesCerrado, lunes24)}, false);
+    martesAbierto.addEventListener("change", function(){validaCheckbox(true, martesAbierto, timeMartesAbre, timeMartesCierra, martesCerrado, martes24)}, false);
+    miercolesAbierto.addEventListener("change", function(){validaCheckbox(true, miercolesAbierto, timeMiercolesAbre, timeMiercolesCierra, miercolesCerrado, miercoles24)}, false);
+    juevesAbierto.addEventListener("change", function(){validaCheckbox(true, juevesAbierto, timeJuevesAbre, timeJuevesCierra, juevesCerrado, jueves24)}, false);
+    viernesAbierto.addEventListener("change", function(){validaCheckbox(true, viernesAbierto, timeViernesAbre, timeViernesCierra, viernesCerrado, viernes24)}, false);
+    sabadoAbierto.addEventListener("change", function(){validaCheckbox(true, sabadoAbierto, timeSabadoAbre, timeSabadoCierra, sabadoCerrado, sabado24)}, false);
+    domingoAbierto.addEventListener("change", function(){validaCheckbox(true, domingoAbierto, timeDomingoAbre, timeDomingoCierra, domingoCerrado, domingo24)}, false);
+    feriadoAbierto.addEventListener("change", function(){validaCheckbox(true, feriadoAbierto, timeFeriadoAbre, timeFeriadoCierra, feriadoCerrado, feriado24)}, false);
+    
+    lunes24.addEventListener("change", function(){validaCheckbox(false, lunes24, timeLunesAbre, timeLunesCierra, lunesCerrado, lunesAbierto)}, false);
+    martes24.addEventListener("change", function(){validaCheckbox(false, martes24, timeMartesAbre, timeMartesCierra, martesAbierto, martesCerrado)}, false);
+    miercoles24.addEventListener("change", function(){validaCheckbox(false, miercoles24, timeMiercolesAbre, timeMiercolesCierra, miercolesAbierto, miercolesCerrado)}, false);
+    jueves24.addEventListener("change", function(){validaCheckbox(false, jueves24, timeJuevesAbre, timeJuevesCierra, juevesAbierto, juevesCerrado)}, false);
+    viernes24.addEventListener("change", function(){validaCheckbox(false, viernes24, timeViernesAbre, timeViernesCierra, viernesAbierto, viernesCerrado)}, false);
+    sabado24.addEventListener("change", function(){validaCheckbox(false, sabado24, timeSabadoAbre, timeSabadoCierra, sabadoAbierto, sabadoCerrado)}, false);
+    domingo24.addEventListener("change", function(){validaCheckbox(false, domingo24, timeDomingoAbre, timeDomingoCierra, domingoAbierto, domingoCerrado)}, false);
+    feriado24.addEventListener("change", function(){validaCheckbox(false, feriado24, timeFeriadoAbre, timeFeriadoCierra, feriadoAbierto, feriadoCerrado)}, false);
+
+    function validaCheckbox(mostrar, check, abre, cierra, des1, des2){
+        var checked = check.checked;
+        if(checked){
+            if(mostrar){
+                abre.disabled = false;
+                cierra.disabled = false;
+            }else{
+                abre.disabled = true;
+                cierra.disabled = true;
+            }
+            des1.checked = false;
+            des2.checked = false;
+        }
+    }
+</script>

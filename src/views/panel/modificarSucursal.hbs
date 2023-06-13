@@ -1,0 +1,150 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style>
+    img{
+	width: 100PX;
+	margin: 10px;
+}
+</style>
+<div class="container p-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card-header text-center p-5">
+                <h3>Modificar Sucursal: {{sucursal.nombre}}</h3>
+                <h6>de {{sucursal.nombreCentro}}</h6>
+            </div>
+            <div class="card-body">
+                <form enctype="multipart/form-data" action="/links/panel/centrosSalud/sucursal/modificar/{{sucursal.idSucursal}}" method="post">
+                    <input style="display: none;" type="text" name="idCentroSalud" value="{{sucursal.idCentroSalud}}">
+                    <div class="form-group">
+                        <label for="" class="form-label">Nombre de la Sucursal</label>
+                        <input type="text" name="nombre" placeholder="Nombre Sucursal"value="{{sucursal.nombre}}" class="form-control" autofocus required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Latitud</label>
+                        <input type="text" name="latitud" id="lat" placeholder="Seleccione en el Mapa la Ubicación"value="{{sucursal.latitud}}" class="form-control"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Longitud</label>
+                        <input type="text" name="longitud" id="long" placeholder="Seleccione en el Mapa la Ubicación"value="{{sucursal.longitud}}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Detalle de la Ubicación</label>
+                        <input type="text" name="detalle" id="ref" placeholder="Referencias ubicación"value="{{sucursal.detalleUbicacion}}" class="form-control"  required>
+                    </div><br>
+                    <div id="dragend"></div>
+                    <div id="map" style="height: 300px; width: 100%;">
+                        Revise su conexión a intenet.
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Numero de Telefono de Recepción</label>
+                        <input type="text" name="telefono1" placeholder="Telefono de Recepción"value="{{sucursal.telefono1}}" class="form-control"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Numero de Telefono de Emergencias</label>
+                        <input type="text" name="telefono2" placeholder="Numero de Telefono de Emergencias"value="{{sucursal.telefono2}}" class="form-control"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="form-label">Escoger una Imagen de Portada. (Sino escoge una, la imagen aterior se conservará.)</label>
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control" name="image" accept="image/*" placeholder="" id="inputGroupFile02" >
+                            <label class="input-group-text"  for="inputGroupFile02">Subir Imagen</label>
+                        </div>
+                        <div id="preview"></div>
+                    </div>
+                    {{!-- <input type="file" name="image" /> --}}
+                    <div class="gap-2 col-6" >
+                        <a class="btn btn-danger btn-blok" href="/links/panel/centrosSalud/detalle/sucursal/{{sucursal.idSucursal}}">Cancelar</a>
+                        <button class="btn btn-success btn-blok mt-0" id="btn">Guardar Cambios</button>
+                    </div>
+                    {{!-- <img src="" alt="" width="100" height="100"> --}}
+                </form>
+            </div>
+            <br>
+        </div>
+            
+    </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDj9Zues1ltWBLzLDZ-5v5JzvRSHkg9bBE&callback=initMap&v=weekly" defer></script>
+<script>
+var preview = document.querySelector('div#preview');
+$(document).on('change','#inputGroupFile02',function(){
+    preview.innerHTML=''
+    if(this.files && this.files[0]){
+    /* Creamos la Imagen*/
+        var img = $('<img >');
+    /* Asignamos el atributo source , haciendo uso del método createObjectURL*/
+        img.attr('src', URL.createObjectURL(this.files[0]));
+    /* Añadimos al Div*/
+    $('#preview').append(img);
+    }
+});
+//let map;
+var latitud = document.querySelector('input#lat')
+var longitud = document.querySelector('input#long')
+var referen = document.querySelector('input#ref')
+var vez = false;
+function initMap() {
+    const centroSalud = { lat: {{sucursal.latitud}}, lng: {{sucursal.longitud}} };
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: centroSalud,
+        zoom: 16,
+        disableDefaultUI: true,
+        styles:[
+            {
+                featureType: "poi.business",
+                stylers: [{ visibility: "off" }],
+            },
+            {
+                featureType: "transit",
+                elementType: "labels.icon",
+                stylers: [{ visibility: "off" }],
+            },
+        ]
+    });
+    if(!vez){
+        const marker = new google.maps.Marker({ map, position: centroSalud, icon: {} });
+        vez = true;
+    }
+    var marker = null;
+    google.maps.event.addListener(map, "click", function(ele) {
+        if (marker) {
+            marker.setMap(null);
+        }
+        marker = new google.maps.Marker({
+            position: ele.latLng,
+            map: map,
+            icon:{
+                path: "M-1.547 12l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM0 0q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+                fillColor: "green",
+                fillOpacity: 1,
+                strokeWeight: 0,
+                rotation: 0,
+                scale: 2,
+                anchor: new google.maps.Point(0, 20),
+            }
+        });
+        
+        var lat = marker.getPosition().lat();
+        var lng = marker.getPosition().lng();
+
+        var geocoder = new google.maps.Geocoder();
+        var latLng = new google.maps.LatLng(lat, lng);
+
+        geocoder.geocode({ 'latLng': latLng }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                if (results[0]) {
+                    var address = results[0].formatted_address;
+                    referen.value = address;
+                }
+            } else {
+                console.log("Geocoder failed due to: " + status);
+            }
+        });
+        latitud.value = lat;
+        longitud.value = lng;
+    })
+}
+
+window.initMap = initMap;
+</script>
+
