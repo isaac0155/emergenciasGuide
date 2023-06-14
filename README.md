@@ -1,10 +1,6 @@
-<div style="text-align: center;">
-  <h1>Emergencias.guide</h1>
-</div>
+# Emergencias.guide
 
-<div style="text-align: center;">
-  <img src="https://i.ibb.co/R6Cwj4r/clinica-de-salud.png" alt="Website Logo" width="100px" height="100px">
-</div>
+<img src="https://i.ibb.co/R6Cwj4r/clinica-de-salud.png" alt="Website Logo" width="100px" height="100px">
 
 
 ## Medical Emergency Assistance Website
