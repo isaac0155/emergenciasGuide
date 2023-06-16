@@ -1,0 +1,130 @@
+<div class="container p-4">
+    <div class="row">
+        
+        <div class="card">
+            <div class="text-center pt-3">
+                <h3>Gestionar Administradores Generales</h3>
+                <p> Un Administrador General tiene acceso total a todas la funcionalidades y gestiones del sistema.</p>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-success text-center">
+                        <h5 class="card-title">Tú eres un Administrador General</h5>
+                        Usuario: {{user.usuario}}<br>
+                        Nombre: {{user.nombres}} {{user.apellidos}}<br>
+                        Carnet: {{user.carnet}}<br>
+                    </li>
+                </ul>
+                                    {{!--  --}}
+                <div class="row mt-3">
+                    <div class="col-sm-6">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nuevo Administradores</h5>
+                            <div class=" input-group-sm">
+                                <label for="int" class="visually">Ingrese el Nombre de Usuario de alguien previamente registrado en el sistema para dar permisos de Administrador General.</label>
+                                <input type="text" class="form-control" style="margin-top: -5;" id="int" placeholder="Ingrese un Nombre de Usuario">
+                                <button class="btn btn-success mb-0" onclick="buscarPersona()">Buscar Persona</button>
+                            </div>                      
+                            <div class="mt-2 busquedaPersona">
+                            </div>                        
+                        </div>  
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lista de Administradores generales</h5>
+                            <table class="table table-hover table-bordered" id="tableadmins">
+                                <tbody>
+                                {{#each administradores}}                          
+                                    <tr class="list-group-item-success">
+                                        <th class="fw-normal" scope="row">
+                                            Usuario: {{usuario}}<br>
+                                            Nombre: {{nombres}} {{apellidos}}<br>
+                                            Carnet: {{carnet}}<br>
+                                        </th>
+                                        <td class="fw-light">
+                                            <div class="d-grid gap-2 mt-0">
+                                                <button class="btn btn-danger" onclick="eliminarAdminGen({{idPersona}}, '{{nombres}} {{apellidos}}')">Eliminar</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {{else}}
+                                <p></p> 
+                                <div class="alert alert-danger text-center" role="alert">
+                                    No hay otros Administradores Generales.
+                                </div>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                {{!--  --}}
+            </div>
+            <div class="mt-2">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function newAdmin(idPersona, user){
+        if (confirm('Al realizar esta acción se eliminará todos los roles de esta persona y se le dará el Permiso de Administrador General y acceso atodo el sistema al usuario: ' + user) == true) {
+            socket.emit('cliente:newAdminGeneral', idPersona);
+        } 
+    }
+    function eliminarAdminGen(idPersona, nombre){
+        if (confirm("Desea quitar todos los permisos de Administrador General a: " + nombre) == true) {
+            socket.emit('cliente:eliminarAdminGeneral', idPersona);
+        } 
+    }
+    function buscarPersona(){
+        var usuario = document.getElementById('int');
+        socket.emit('cliente:buscarPersonaGen', usuario.value)
+    }
+    socket.on('server:reload', async () => {
+        location.reload();
+    });
+    socket.on('server:buscarPersonaGen', async (persona) => {
+        var divPer = document.querySelector('div.busquedaPersona');
+        divPer.innerHTML = '';
+
+        if(persona){
+            divPer.append(mostrarPersona(persona))
+        }else{
+            divPer.append(sinResult())
+            
+        }
+
+    });
+    function sinResult(){
+        var div = document.createElement('div')
+        div.className='alert alert-danger';
+        div.innerHTML = `
+            No hay resultados para este Nombre de Usuario.
+            Es posible que no se haya registrado el usuario que buscas.
+            O que el usuario que buscas ya tenga permisos de Administrador General.
+        `;
+        return div; 
+    }
+    function mostrarPersona(persona){
+        var div = document.createElement('div')
+        div.className='alert alert-success';
+        div.innerHTML = `
+            Usuario: ${persona.usuario}<br>
+            Nombre: ${persona.nombres} ${persona.apellidos}<br>
+            Carnet: ${persona.carnet}<br>
+            <button type="button" onclick="newAdmin(${persona.idPersona},'${persona.usuario}')" class="btn btn-success mt-0">Nuevo Administrador General</button>
+        `;
+        return div; 
+    } 
+
+
+
+</script>

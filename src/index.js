@@ -47,7 +47,7 @@ app.use(session({
 }));
 app.use(device.capture());
 app.use(flash());
-//app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(passport.initialize());

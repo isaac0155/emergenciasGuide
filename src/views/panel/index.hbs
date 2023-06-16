@@ -18,18 +18,28 @@
                 <img src="/img/centroSalud.png" class="card-img-top p-3" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">Gestionar Centros de Salud</h5>
-                    <p class="card-text">Registrar, validad, aprobar Nuevos centros de salud y Sucursales en el sistema.</p>
+                    <p class="card-text">Registrar, validad, aprobar Nuevos centros de salud, Sucursales, sus administradores en el sistema.</p>
                     <a href="/links/panel/centrosSalud" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3 ">
             <div class="card text-center border-info">
-                <img src="/img/administradorSucursal.png" class="card-img-top p-3" alt="...">
+                <img src="/img/doctor.png" class="card-img-top p-3" alt="...">
                 <div class="card-body">
-                    <h5 class="card-title">Gestionar Administrador de Sucursal</h5>
-                    <p class="card-text">Agregar Administradores a centros de salud Sucursales ya existentes</p>
-                    <a href="/links/panel/administradorSucursal" class="btn btn-primary">Entrar</a>
+                    <h5 class="card-title">Gestionar Especialidades</h5>
+                    <p class="card-text">Gestión de Especialidades para los Centro de Salud.</p>
+                    <a href="/links/panel/administradorEspecialidad" class="btn btn-primary">Entrar</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 ">
+            <div class="card text-center border-info">
+                <img src="/img/servicio-al-cliente.png" class="card-img-top p-3" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar Servicios</h5>
+                    <p class="card-text">Gestión de Servicios que los Centros de Salud pueden ofrecer.</p>
+                    <a href="/links/panel/administradorServicio" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
         </div>
@@ -39,7 +49,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Gestionar Administradores Generales</h5>
                     <p class="card-text">Agregar, eliminar a administradores que tienen control total del sistema.</p>
-                    <a href="/links/panel/administradorGeneral" class="btn btn-primary">Entrar</a>
+                    <a href="/links/panel/administradorGeneral/{{user.idPersona}}" class="btn btn-primary">Entrar</a>
                 </div>
             </div>
         </div>

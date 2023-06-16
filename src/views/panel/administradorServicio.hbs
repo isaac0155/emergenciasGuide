@@ -1,0 +1,59 @@
+<div class="container p-4">
+    <div class="row">
+        
+        <div class="card">
+            <div class="card-header text-center p-3">
+                <h3>Gestionar Servicios que permite el Sistema</h3>
+            </div>
+            <div class="card-body">
+            <p class="text-center">
+                Coloca el puntero del mouse o presiona prolongadamente para ver el detalle del Servicio.
+            </p>
+                {{!--  --}}
+                <div class="row mt-3">
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Registrar Nuevo Servicio</h5>
+                                <p>Revise su ortografía. La descripcion del Servicio debe ser puntual.</p>
+                                <form action="/links/panel/administradorServicio" method="post">
+                                    <div class="input-group-sm mb-3">
+                                        <label for="" class="form-label">Nombre de la Servicio</label>
+                                        <input type="text" name="nombre" class="form-control" placeholder="Ingrese el Nombre de la Servicio" autofocus required><br>
+                                        <label for="exampleFormControlTextarea1" class="form-label">Ingrese la Descripción de la Servicio</label>
+                                        <textarea class="form-control" name="detalle" rows="3" required placeholder="Ingrese aquí la descripción de la Servicio"></textarea>
+                                        <button class="btn btn-success" type="submit">Ingresar Servicio</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lista de Servicios registrados en el Sistema</h5>
+                            <table class="table table-success table-hover ">
+                                <tbody>
+                                    {{#each servicios}}
+                                    <tr>
+                                        <td class="fw-normal" title="{{detalle}}">{{nombre}}</td>
+                                    </tr>
+                                    {{else}} 
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        No hay Servicios Registradas.
+                                    </div>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                {{!--  --}}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+</script>

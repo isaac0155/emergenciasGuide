@@ -6,7 +6,10 @@ body{
     background: #f3f3f3;
     font-family: 'Oswald', sans-serif;
 }
-
+.colorNav{
+    background: #003c44;
+    color: white;
+}
 .todoContenido{
     width: 100%;
     height: 100%;
