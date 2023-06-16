@@ -1,0 +1,1 @@
+INSERT INTO emergenciasguide.cuidadoaire (idCuidadoaire, temperatura, humedad, calidadAire, presion, co2, pm, ventilador, iluminacion) VALUES (1, '22.60', '30.00', '1', '75283.00', '1426.00', '11.00', '0', '0');

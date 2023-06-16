@@ -1,0 +1,313 @@
+<div class="container p-4">
+    <div class="row">
+        
+        <div class="card">
+            <div class="text-center pt-5">
+                <h1>{{sucursal.nombre}}</h1>
+                <h6 class="text-success">de {{sucursal.nombreCentro}}</h6>
+            </div>
+            <div class="card-body">
+                <div id="map" style="height: 300px; width: 100%;">
+                    Revise su conexión a intenet.
+                </div>
+                <a class="link-underline-dark" target="_blank" href="https://maps.google.com/?q={{sucursal.latitud}},{{sucursal.longitud}}">Abrir ubicación el Google Maps</a>
+            </div>
+            <div class="activacion p-3" id="activacion">
+                {{#if sucursal.activo}}
+                <div class="alert alert-success text-center">
+                    Sucursal Activa y visible para todos los Usuarios.
+                    <button type="button" onclick="desactivarSucursal({{sucursal.idSucursal}})" class="btn btn-danger mt-0">Desactivar</button>
+                    {{else}}
+                <div class="alert alert-danger text-center">
+                    Sucursal Desactivada, no es visible para usuarios.
+                    <button type="button" onclick="activarSucursal({{sucursal.idSucursal}})" class="btn btn-success mt-0">Activar</button>
+                {{/if}}
+                </div>
+            </div>
+            <div class="card-body">
+                {{!--  --}}
+                <div class="row mt-3">
+                    <div class="col-sm-6 mb-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Detalle</h5>
+                            <img src="/img/imgenCliente/{{sucursal.image}}" class="img-fluid" alt="..." width="100">
+                            <table class="table table-hover">
+                                <tbody>
+                                    <tr>
+                                        <th class="fw-normal" scope="row">Nombre Sucursal Centro Salud</th>
+                                        <td class="fw-light">{{sucursal.nombre}}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="fw-normal"scope="row">Detalle de Ubicación</th>
+                                        <td class="fw-light">{{sucursal.detalleUbicacion}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="fw-normal"scope="row">Telefono de Contacto</th>
+                                        <td class="fw-light">{{sucursal.telefono1}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th  class="fw-normal"scope="row">Telefono de Emergencias</th>
+                                        <td class="fw-light">{{sucursal.telefono2}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-grid gap-2 mt-0">
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/modificar/{{sucursal.idSucursal}}" >Modificar Detalles de Sucursal</a>   
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Horarios de Atención</h5>
+                            {{#if horario}}
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Día</th>
+                                            <th scope="col">Horario</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Lunes</td>
+                                            <td>{{horario.lunes}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Martes</td>
+                                            <td>{{horario.martes}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Miercoles</td>
+                                            <td>{{horario.miercoles}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Jueves</td>
+                                            <td>{{horario.jueves}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Viernes</td>
+                                            <td>{{horario.viernes}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Sábado</td>
+                                            <td>{{horario.sabado}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Domingo</td>
+                                            <td>{{horario.domingo}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Feriados</td>
+                                            <td>{{horario.feriados}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="d-grid gap-2 mt-0">
+                                    <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/horario/modificar/{{sucursal.idSucursal}}">Modificar Horario de Sucursal</a>   
+                                    <button class="btn btn-danger mt-0" onclick="eliminarHorario({{sucursal.idHorario}},{{sucursal.idSucursal}})">Eliminar Horario</button>   
+                                </div>
+                            {{else}}
+                            <div class="alert alert-danger text-center" role="alert">
+                                No hay Horarios para este centro.
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/horario/nuevo/{{sucursal.idSucursal}}" >Ingresar un Nuevo Horario</a>
+                            </div>
+                            {{/if}}
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Aspecialidades Asignadas</h5>
+                            <p class="fw-light">Coloca el puntero del mouse o presiona prolongadamente para ver el detalle de la Especialidad.
+                            </p>
+                            <table class="table table-hover">
+                                <tbody>
+                                    {{#each especialidades}}
+                                    <tr>
+                                        <td class="fw-normal" title="{{detalle}}">{{nombre}}</td>
+                                    </tr>
+                                    {{else}} 
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        No hay Especialidades asignadas a este centro.
+                                    </div>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                            <div class="d-grid gap-2 mt-0">
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/especialidad/gestionar/{{sucursal.idSucursal}}" >Gestionar Especialidades</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Servicios Asignados</h5>
+                            <p class=" fw-light">Coloca el puntero del mouse o presiona prolongadamente para ver el detalle del Servicio.
+                            </p>
+                            <table class="table table-hover">
+                                <tbody>
+                                    {{#each servicios}}
+                                    <tr>
+                                        <td class="fw-normal" title="{{detalle}}">{{nombre}}</td>
+                                    </tr>
+                                    {{else}} 
+                                    <div class="alert alert-danger text-center" role="alert">
+                                        No hay Servicios asignados a este centro.
+                                    </div>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                            <div class="d-grid gap-2 mt-0">
+                                <a class="btn btn-success mt-0" href="/links/panel/centrosSalud/sucursal/servicio/gestionar/{{sucursal.idSucursal}}" >Gestionar Servicios</a>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {{!--  --}}
+            </div>
+            <div class="mt-2">
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDj9Zues1ltWBLzLDZ-5v5JzvRSHkg9bBE&callback=initMap&v=weekly" defer></script>
+<script>
+    function initMap() {
+        const centroSalud = { lat: {{sucursal.latitud}}, lng: {{sucursal.longitud}} };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            scaleControl: false,
+            center: centroSalud,
+            zoom: 16,
+            styles:[
+                {
+                    featureType: "poi.business",
+                    stylers: [{ visibility: "off" }],
+                },
+                {
+                    featureType: "transit",
+                    elementType: "labels.icon",
+                    stylers: [{ visibility: "off" }],
+                },
+            ],
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: true,
+            fullscreenControl: true
+        });
+        const infowindow = new google.maps.InfoWindow();
+        infowindow.setContent("{{sucursal.nombre}}<br><br>{{sucursal.detalleUbicacion}}");
+        const marker = new google.maps.Marker({ map, position: centroSalud });
+        marker.addListener("click", () => {
+            infowindow.open(map, marker);
+        });
+    }
+
+    window.initMap = initMap;
+    
+    //funciones
+    var alert1 = document.querySelector('div#activacion');
+
+    function newAdmin(idPersona, idSucursal){
+        socket.emit('cliente:newAdminSucursal', Number(idPersona), Number(idSucursal));
+    }
+    function desactivarSucursal(id){
+        socket.emit('cliente:desactivarSucursal', id);
+    }
+    function activarSucursal(id){
+        socket.emit('cliente:activarSucursal', id);
+    }
+    function crearAlert(id, activo){
+        const div = document.createElement("div");
+        if(activo){
+            div.className='alert alert-success text-center';
+            div.innerHTML = `
+                Sucursal Activa y visible para todos los Usuarios.
+                <button type="button" onclick="desactivarSucursal(${id})" class="btn btn-danger mt-0">Desactivar</button>
+            `;
+        }else{
+            div.className='alert alert-danger text-center';
+            div.innerHTML = `
+                Sucursal Desactivada, no es visible para usuarios.
+                <button type="button" onclick="activarSucursal(${id})" class="btn btn-success mt-0">Activar</button>
+            `;
+        }
+        return div;
+    }
+    function buscarPersona(){
+        var usuar = document.querySelector('input#int');
+        var valor = usuar.value;
+        var sucursal = {{sucursal.idSucursal}};
+        socket.emit('cliente:buscarPersona', valor, Number(sucursal));
+    }
+    function eliminarAdmin(idPersona){
+        var idSucursal = {{sucursal.idSucursal}};
+        socket.emit('cliente:eliminarAdminSucursal', Number(idPersona), Number(idSucursal));
+    }
+    function eliminarHorario(idHorario, idSucursal){
+        socket.emit('cliente:eliminarHorario', Number(idHorario), Number(idSucursal));
+    }
+    //sockets
+    socket.on('server:sucursalActivado', async (id) => {
+        alert1.innerHTML = ``;
+        alert1.append(crearAlert(id, true));
+    });
+    socket.on('server:eliminarHorario', async () => {
+        location.reload();
+    });
+    
+    socket.on('server:sucursalDesactivado', async (id) => {
+        alert1.innerHTML = ``;
+        alert1.append(crearAlert(id, false));
+    });
+    socket.on('server:newAdminSucursal', async () => {
+        location.reload();
+    });
+
+    socket.on('server:buscarPersona', async (personas) => {
+        var resultadoBusqueda = document.querySelector('div.busquedaPersona');
+        resultadoBusqueda.innerHTML='';
+        if(personas.length > 0){
+            personas.forEach(function(element, index){
+                resultadoBusqueda.append(mostrarPersona(element));
+            })
+        }else{
+            resultadoBusqueda.append(sinResult());
+        }
+   })
+    socket.on('server:eliminarAdminSucursal', async () => {
+        location.reload();
+   })
+    function sinResult(){
+        var div = document.createElement('div')
+        div.className='alert alert-danger';
+        div.innerHTML = `
+            No hay resultados para este Nombre de Usuario.
+            Es posible que no se haya registrado el usuario que buscas.
+            O que el usuario que buscas tenga permisos de Administrador General.
+        `;
+        return div; 
+    }
+    function mostrarPersona(persona){
+        var sucursal = {{sucursal.idSucursal}}
+        var div = document.createElement('div')
+        div.className='alert alert-success';
+        div.innerHTML = `
+            Nombre: ${persona.nombres} ${persona.apellidos}<br>
+            Carnet: ${persona.carnet}<br>
+            Usuario: ${persona.usuario}<br>
+            Este usuario Administra: ${persona.sucursales} sucursales.
+            <button type="button" onclick="newAdmin(${persona.idPersona},${sucursal})" class="btn btn-success mt-0">Asignar nuevo administrado de este centro.</button>
+        `;
+        return div; 
+    } 
+</script>

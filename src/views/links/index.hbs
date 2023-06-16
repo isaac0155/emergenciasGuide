@@ -1,0 +1,41 @@
+<div class="container p-4 ">
+    <div class="">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="text-center p-3 mb-4">
+                    <h2>Bienvenido al Directorio Médico</h2>
+                </div>
+            </div>
+        </div>
+        {{#each sucursales}}   
+        <div class="card mb-3" style="">
+            <div class="row g-0">
+                <div class="col-md-4" style="display: flex; justify-content: center;align-items: center;">
+                    <img src="/img/imgenCliente/{{image}}" class="img-fluid rounded-start" alt="..." width="200">
+                </div>
+                <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{nombre}}</h5>
+                    <p class="card-text">
+                        Ubicación : {{detalleUbicacion}}<br>
+                        Telefonos : {{telefono1}} - {{telefono2}}
+                        <br>
+                        {{#if idHorario}}
+                            Horarios : Sí
+                        {{else}}
+                            <p class="fs-6 fw-normal badge bg-danger">No hay horarios registrados.</p>
+                        {{/if}}
+                        <br>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="/links/sucursal/{{idSucursal}}" class="btn btn-success mt-0 mb-0">Ver detalles</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <p>Aún no hay Sucursales Registradas</p>
+        {{/each}}
+    </div>
+</div>

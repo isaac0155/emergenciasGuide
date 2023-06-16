@@ -1,9 +1,5 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <style>
-    img{
-	width: 100PX;
-	margin: 10px;
-}
 </style>
 <div class="container p-4">
     <div class="row">
@@ -53,7 +49,6 @@
                     </div>
                     {{!-- <input type="file" name="image" /> --}}
                     <div class="gap-2 col-6" >
-                        <a class="btn btn-danger btn-blok" href="/links/panel/centrosSalud/detalle/sucursal/{{sucursal.idSucursal}}">Cancelar</a>
                         <button class="btn btn-success btn-blok mt-0" id="btn">Guardar Cambios</button>
                     </div>
                     {{!-- <img src="" alt="" width="100" height="100"> --}}
@@ -74,10 +69,14 @@ $(document).on('change','#inputGroupFile02',function(){
         var img = $('<img >');
     /* Asignamos el atributo source , haciendo uso del método createObjectURL*/
         img.attr('src', URL.createObjectURL(this.files[0]));
+        img.attr('width', '150px');
+        img.attr('height', '100%');
+        img.attr('class', 'pb-3');
     /* Añadimos al Div*/
     $('#preview').append(img);
     }
 });
+//<img src="https://i.ibb.co/k8BC8BZ/Recurso-3-8.png" width="35" height="35">
 //let map;
 var latitud = document.querySelector('input#lat')
 var longitud = document.querySelector('input#long')

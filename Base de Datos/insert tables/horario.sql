@@ -1,0 +1,1 @@
+INSERT INTO emergenciasguide.horario (idHorario, lunes, martes, miercoles, jueves, viernes, sabado, domingo, feriados) VALUES (8, '24h', '24h', '08:00 - 16:30', '08:00 - 16:30', 'Cerrado', 'Cerrado', 'Cerrado', 'Cerrado');

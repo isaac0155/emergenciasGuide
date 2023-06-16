@@ -132,7 +132,20 @@ var ret = (io) => {
     //Paginas Publicas
 
     router.get('/', async (req, res) => {
-        res.send('No hay pagina de Directorio');
+        var sucursales = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.activo = 1;');
+        res.render('links/index', {sucursales});
+    });
+    router.get('/sucursal/:id', async (req, res) => {
+        const { id } = req.params;
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
+        var horario = []
+        if (sucursal[0].idHorario) {
+            var idHorario = sucursal[0].idHorario;
+            horario = await pool.query('select * from horario where idHorario = ?', idHorario)
+        }
+        var especialidades = await pool.query('select a.* from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ?;', Number(id))
+        var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
+        res.render('links/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
     });
 
     //Paginas que sólo puede ver el Administrador General
@@ -254,8 +267,8 @@ var ret = (io) => {
         res.render('panel/administradorGeneral', { administradores });
     });
 
-    //paginas que puede ver el administrador de susursal
-    //paginas que puede ver el administrador de susursal
+    //paginas que puede ver el administrador de susursal y general (comparten ambos)
+    //paginas que puede ver el administrador de susursal y general (comparten ambos)
 
     router.get('/panel/centrosSalud/sucursal/modificar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
@@ -279,7 +292,11 @@ var ret = (io) => {
         }
         await pool.query('update sucursal set ? where idSucursal = ?', [newSucursal, id]);;
         req.flash('success', 'Datos Modificados de la sucursal: ' + nombre);
-        res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id);
+        if (req.user.tipoUser == 'Administrador General') {
+            res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id);
+        } else {
+            res.redirect('/links/panelAdminSuc/centrosSalud/detalle/sucursal/' + id);
+        }
     });
     router.get('/panel/centrosSalud/sucursal/horario/nuevo/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
@@ -308,7 +325,11 @@ var ret = (io) => {
         var idHorario = { idHorario: programa.insertId }
         await pool.query('update sucursal set ? where idSucursal = ?', [idHorario, id])
         req.flash('success', 'Horario Agregado correctamente.');
-        res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
+        if (req.user.tipoUser == 'Administrador General') {
+            res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
+        } else {
+            res.redirect('/links/panelAdminSuc/centrosSalud/detalle/sucursal/' + id)
+        }
     });
     router.get('/panel/centrosSalud/sucursal/horario/modificar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
@@ -336,7 +357,11 @@ var ret = (io) => {
         }
         await pool.query('update horario set ? where idHorario = ?', [horario, Number(req.body.idHorario)]);
         req.flash('success', 'Horario Modificado correctamente.');
-        res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
+        if (req.user.tipoUser == 'Administrador General'){
+            res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
+        }else{
+            res.redirect('/links/panelAdminSuc/centrosSalud/detalle/sucursal/' + id)
+        }
     });
     router.get('/panel/centrosSalud/sucursal/especialidad/gestionar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
@@ -353,6 +378,23 @@ var ret = (io) => {
         var serviciosSucursal = await pool.query('select a.*, b.idServicioSucursal from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ? ORDER BY b.idServicioSucursal DESC;', idSucursal)
         var servicios = await pool.query('select a.* from servicio a where (select count(*) from serviciosucursal b where b.idServicio = a.idServicio and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
         res.render('panel/gestionarServicioSucursal', { sucursal: sucursal[0], serviciosSucursal, servicios })
+    });
+    router.get('/panelAdminSuc', isAdminSucur, async (req, res) => {
+        var sucursales = await pool.query('select * from sucursal a, administradorcentro b where a.idSucursal = b.idSucursal and b.idPersona = ?;', req.user.idPersona);
+        //console.log(sucursales)
+        res.render('panelAdminSucur/index', {sucursales})
+    });
+    router.get('/panelAdminSuc/centrosSalud/detalle/sucursal/:id', isAdminSucur, async (req, res) => {
+        const { id } = req.params;
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
+        var horario = []
+        if (sucursal[0].idHorario) {
+            var idHorario = sucursal[0].idHorario;
+            horario = await pool.query('select * from horario where idHorario = ?', idHorario)
+        }
+        var especialidades = await pool.query('select a.* from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ?;', Number(id))
+        var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
+        res.render('panelAdminSucur/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
     });
     
 

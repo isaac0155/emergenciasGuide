@@ -1,0 +1,50 @@
+<div class="container p-4 ">
+    <div class="text-center p-3 mb-4">
+        <h2>Panel de Control - {{user.tipoUser}}</h2>
+        <h6>Usted es administrador de las siguientes Sucursales</h6>
+    </div>
+    <div class="">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Lista de Sucusales que usted Administra</h5>
+            </div>
+        </div>
+        {{#each sucursales}}   
+        <div class="card mb-3" style="">
+            <div class="row g-0">
+                <div class="col-md-4" style="display: flex; justify-content: center;align-items: center;">
+                    <img src="/img/imgenCliente/{{image}}" class="img-fluid rounded-start" alt="..." width="200">
+                </div>
+                <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{nombre}}</h5>
+                    <p class="card-text">
+                        Ubicación : {{detalleUbicacion}}<br>
+                        Telefonos : {{telefono1}} - {{telefono2}}
+                        <br>
+                        {{#if idHorario}}
+                            Horarios : Sí
+                        {{else}}
+                            <p class="fs-6 fw-normal badge bg-danger">No hay horarios registrados.</p>
+                        {{/if}}
+                        <br>
+                        {{#if activo}}
+                            Sucursal Activa, visible para todos.
+                        {{else}}
+                            <p class="fs-6 fw-normal badge bg-danger">Esta Sucursal no es visible.</p>
+                        {{/if}}
+                        <br>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="/links/panelAdminSuc/centrosSalud/detalle/sucursal/{{idSucursal}}" class="btn btn-danger mt-0 mb-0">Gestionar Emergencias</a>
+                        <a href="/links/panelAdminSuc/centrosSalud/detalle/sucursal/{{idSucursal}}" class="btn btn-outline-primary mt-0 mb-0">Ver detalles</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <p>Aún no hay Sucursales Registradas</p>
+        {{/each}}
+    </div>
+</div>
