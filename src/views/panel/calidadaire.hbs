@@ -1,0 +1,317 @@
+<style>
+    .tachometer {
+        width: 220px;
+        height: 220px;
+        background-color: #E3E3E3;
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    .needle {
+        width: 5px;
+        height: 90px;
+        background-color: red;
+        position: absolute;
+        left: calc(50% - 8px);
+        bottom: 50%;
+        transform-origin: bottom center;
+        transform: rotate(0deg);
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .numbers {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(-95deg);
+        margin-left: -11px;
+    }
+
+    .number {
+        position: absolute;
+        font-size: 15px;
+        color: black;
+        transform-origin: center bottom;
+    }
+
+</style>
+<script>
+    function prenderVent(){
+        socket.emit('client:modif', 'vent', true);
+    }
+    function apagarVent(){
+        socket.emit('client:modif','vent',false);
+    }
+    function prenderIlum(){
+        socket.emit('client:modif','ilum',true);
+    }
+    function apagarIlum(){
+        socket.emit('client:modif','ilum',false);
+    }
+</script>
+<div class="container p-0">
+    <div class="row p-0">
+        
+        <div class="card p-0">
+            <div class="card-header text-center pt-5 ">
+                <h3>Panel de Supervición de Calidad de Aire</h3>
+                <h6>de Isaac Herrera</h6>
+            </div>
+            <div class="card-body">
+            <p class="text-center">
+                Los medidores funcionan en tiempo real.
+            </p>
+                {{!--  --}}
+                <div class="row mt-3">
+                    
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2 text-center">Ventiladores</h5>
+                            <p id="valueVent" class="text-center"></p>
+                            <div class="d-grid gap-2 col-6 mx-auto p-0">
+                                <button class="btn btn-success m-0" onclick="prenderVent()" type="button">Prender</button>
+                                <button class="btn btn-danger m-0"  onclick="apagarVent()"type="button">Apagar</button>
+                            </div>
+                            {{!--  --}}
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-2 text-center">Iluminación</h5>
+                            <p id="valueIlum" class="text-center"></p>
+                            {{!--  --}}
+                            <div class="d-grid gap-2 col-6 mx-auto p-0">
+                                <button class="btn btn-success m-0" onclick="prenderIlum()" type="">Prender</button>
+                                <button class="btn btn-danger m-0" onclick="apagarIlum()" type="">Apagar</button>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body" style="min-width: 425px;">
+                            <h5 class="card-title mb-5 text-center" >Temperarura</h5>
+                            {{!--  --}}
+                                <p class="text-center" id="valueTemp"></p>
+                            <div style="display: flex; justify-content: center;">
+                                <div style="display: flex; justify-content: center;">
+                                <div class="tachometer">
+                                    <div class="needle needle1"></div>
+                                    <div class="numbers numbers1"></div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body" style="min-width: 425px;">
+                            <h5 class="card-title mb-5 text-center">Humedad</h5>
+                            <p class="text-center" id="valueHum"></p>
+                            {{!--  --}}
+                            <div style="display: flex; justify-content: center;">
+                            <div class="tachometer">
+                                <div class="needle needle2"></div>
+                                <div class="numbers numbers2"></div>
+                            </div>
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                            <div class="card-body" style="min-width: 425px;">
+                                <h5 class="card-title mb-5 text-center">Calidad de Aire</h5>
+                                <p class="text-center" id="valueAire"></p>
+                                {{!--  --}}
+                                <div style="display: flex; justify-content: center;">
+                                <div class="tachometer">
+                                    <div class="needle needle3"></div>
+                                    <div class="numbers numbers3"></div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body" style="min-width: 425px;">
+                            <h5 class="card-title mb-5 text-center">Presión</h5>
+                            <p class="text-center" id="valuePres"></p>
+                            {{!--  --}}
+                            <div style="display: flex; justify-content: center;">
+                            <div class="tachometer">
+                                <div class="needle needle4"></div>
+                                <div class="numbers numbers4"></div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body" style="min-width: 425px;">
+                            <h5 class="card-title mb-5 text-center">Nivel de Dioxido de Carbono</h5>
+                            <p class="text-center" id="valueCo2"></p>
+                            {{!--  --}}
+                            <div style="display: flex; justify-content: center;">
+                            <div class="tachometer">
+                                <div class="needle needle5"></div>
+                                <div class="numbers numbers5"></div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3 mt-3 mb-sm-0">
+                        <div class="card">
+                        <div class="card-body" style="min-width: 425px;">
+                            <h5 class="card-title mb-5 text-center">Tamaño de Partículas en el Aire</h5>
+                            <p class="text-center" id="valuePm"></p>
+                            {{!--  --}}
+                            <div style="display: flex; justify-content: center;">
+                            <div class="tachometer">
+                                <div class="needle needle6"></div>
+                                <div class="numbers numbers6"></div>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                {{!--  --}}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var tem = document.getElementById('valueTemp');
+    var hum = document.getElementById('valueHum');
+    var aire = document.getElementById('valueAire');
+    var pres = document.getElementById('valuePres');
+    var co2 = document.getElementById('valueCo2');
+    var pm = document.getElementById('valuePm');
+    var vent = document.getElementById('valueVent');
+    var ilum = document.getElementById('valueIlum');
+    miFuncion();
+    setInterval(miFuncion, 500);
+
+    function miFuncion() {
+    // Código de tu función aquí
+        socket.emit('client:calidadAire');
+    }
+    socket.on('server:calidadAire', async (datos) => {
+        tem.textContent = datos.temperatura + " °C";
+        hum.textContent = datos.humedad + " %";
+        aire.textContent = datos.calidadAire + "";
+        pres.textContent = datos.presion + " Pa.";
+        co2.textContent = datos.co2 + " Co2";
+        pm.textContent = datos.pm + " MP";
+        vent.textContent = datos.ventilador == '10' ? 'Encendido': 'Apagado.'
+        ilum.textContent = datos.iluminacion == '10' ? 'Encendido': 'Apagado.'
+        
+        if(Number(datos.calidadAire) > 1){
+            prenderVent()
+        }
+        //console.log(datos.co2)
+        updateTachometers(Number(datos.temperatura), Number(datos.humedad), Number(datos.calidadAire), Number(datos.presion), Number(datos.co2), Number(datos.pm));
+    });
+
+
+
+    // Obtén una referencia a los elementos de las agujas y los números
+    const needle1 = document.querySelector('.needle1');
+    const numbersContainer1 = document.querySelector('.numbers1');
+
+    const needle2 = document.querySelector('.needle2');
+    const numbersContainer2 = document.querySelector('.numbers2');
+
+    const needle3 = document.querySelector('.needle3');
+    const numbersContainer3 = document.querySelector('.numbers3');
+
+    const needle4 = document.querySelector('.needle4');
+    const numbersContainer4 = document.querySelector('.numbers4');
+
+    const needle5 = document.querySelector('.needle5');
+    const numbersContainer5 = document.querySelector('.numbers5');
+
+    const needle6 = document.querySelector('.needle6');
+    const numbersContainer6 = document.querySelector('.numbers6');
+
+    // Función para generar los números en el borde exterior del tacómetro
+    function generateNumbers(container, minValue, maxValue, a) {
+    const totalNumbers = a;
+    const valueIncrement = (maxValue - minValue) / totalNumbers;
+
+    for (let i = 0; i <= totalNumbers; i++) {
+        const number = document.createElement('div');
+        number.classList.add('number');
+        number.textContent = minValue + i * valueIncrement;
+        number.style.transform = `rotate(${i * (280 / totalNumbers)}deg) translateY(-85px)`;
+        container.appendChild(number);
+    }
+    }
+
+    // Ejemplo: actualizar la aguja y generar números para cada tacómetro
+    function updateTachometers(a,b,c,d,e,f) {
+    const value1 = a; // Generar un valor aleatorio entre 500 y 1000
+    const value2 = b; // Generar un valor aleatorio entre 1500 y 2000
+    const value3 = c; // Generar un valor aleatorio entre 2500 y 3000
+    const value4 = d; // Generar un valor aleatorio entre 2500 y 3000
+    const value5 = e; // Generar un valor aleatorio entre 2500 y 3000
+    const value6 = f; // Generar un valor aleatorio entre 2500 y 3000
+
+    updateNeedle(needle1, value1, -10, 100);
+    generateNumbers(numbersContainer1, -10, 100, 10);
+
+    updateNeedle(needle2, value2, 0, 100);
+    generateNumbers(numbersContainer2, 0, 100, 10);
+
+    updateNeedle(needle3, value3, 0, 3);
+    generateNumbers(numbersContainer3, 0, 3, 3);
+
+    updateNeedle(needle4, value4, 50000, 100000);
+    generateNumbers(numbersContainer4, 50000, 100000, 5);
+
+    updateNeedle(needle5, value5, 600, 3000);
+    generateNumbers(numbersContainer5, 600, 3000, 6);
+
+    updateNeedle(needle6, value6, 5, 11);
+    generateNumbers(numbersContainer6, 5, 11, 6);
+    }
+
+    // Función para actualizar la posición de la aguja según el valor del tacómetro
+    function updateNeedle(needle, value, minValue, maxValue) {
+    //const minValue = 500; // Valor mínimo en la escala
+    //const maxValue = 1000; // Valor máximo en la escala
+    const minAngle = -90; // Ángulo mínimo
+    const maxAngle = 180; // Ángulo máximo
+
+    const rangeValue = maxValue - minValue;
+    const rangeAngle = maxAngle - minAngle;
+
+    const angle = ((value - minValue) / rangeValue) * rangeAngle + minAngle;
+    needle.style.transform = `rotate(${angle}deg)`;
+    }
+
+    // Actualizar los tacómetros al cargar la página
+    //updateTachometers();
+
+    // Ejemplo: actualizar los tacómetros cada 2 segundos
+    //setInterval(updateTachometers, 2000);
+
+</script>

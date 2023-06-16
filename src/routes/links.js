@@ -1,3 +1,4 @@
+const passport = require('passport');
 const { PORT } = require('../config');
 
 var ret = (io) => {
@@ -102,6 +103,30 @@ var ret = (io) => {
         socket.on('cliente:eliminarServicio', async (idServicioSucursal) => {
             await pool.query('delete from serviciosucursal where idServicioSucursal = ?;', idServicioSucursal);
             socket.emit('server:reload');
+        });
+        
+        socket.on('client:calidadAire', async () => {
+            var calidadAire = await pool.query('select * from cuidadoaire where idCuidadoaire = 1');
+            //console.log(calidadAire[0])
+            socket.emit('server:calidadAire', calidadAire[0]);
+        });
+        
+        socket.on('client:modif', async (item, value) => {
+            //console.log(item, value)
+            if (item == 'ilum'){
+                if(value){
+                    await pool.query('UPDATE cuidadoaire t SET t.iluminacion = "10" WHERE t.idCuidadoaire = 1');
+                }else{
+                    await pool.query('UPDATE cuidadoaire t SET t.iluminacion = "0" WHERE t.idCuidadoaire = 1');
+                }
+            }
+            if (item == 'vent'){
+                if (value) {
+                    await pool.query('UPDATE cuidadoaire t SET t.ventilador = "10" WHERE t.idCuidadoaire = 1');
+                }else{
+                    await pool.query('UPDATE cuidadoaire t SET t.ventilador = "0" WHERE t.idCuidadoaire = 1');
+                }
+            }
         });
     });
 
@@ -330,6 +355,31 @@ var ret = (io) => {
         var servicios = await pool.query('select a.* from servicio a where (select count(*) from serviciosucursal b where b.idServicio = a.idServicio and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
         //res.send({ sucursal: sucursal[0], serviciosSucursal, servicios })
         res.render('panel/gestionarServicioSucursal', { sucursal: sucursal[0], serviciosSucursal, servicios })
+    });
+    //servidor de instrumentación electronica
+    router.post('/calidadaire', async (req, res) => {
+        //const { name, pass } = req.params;
+        const { temperatura, humedad, calidadAire, presion, co2, pm, ventilador, iluminacion } = req.body;
+        var proy = {
+            temperatura,
+            humedad,
+            calidadAire,
+            presion,
+            co2,
+            pm
+        }
+        await pool.query('update cuidadoaire set ? where idCuidadoaire = 1;', [proy]);
+        var estados = await pool.query('select ventilador, iluminacion from cuidadoaire where idCuidadoaire = 1;');
+        //console.log(estados[0]);
+        //console.log(req.body);
+        var iluminacion1 = estados[0].iluminacion == "10" ? "Prendido" : "Apagado" ;
+        var ventilador1 = estados[0].ventilador == "10" ? "Prendido" : "Apagado";;
+        var respuesta = ventilador1 + ',' + iluminacion1;
+        res.send(respuesta);
+    });
+    
+    router.get('/calidadaire', async (req, res) => {
+        res.render('panel/calidadaire');
     });
 
     /*router.get('/delete/:id', isLoggedIn,async(req, res)=>{
