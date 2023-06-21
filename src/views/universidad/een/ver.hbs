@@ -31,9 +31,12 @@
                                         <li class="list-group-item list-group-item-action list-group-item-warning mb-5">
                                             Iluminación: {{observacion.tipo_foco}} <br>
                                             Lumenes: {{observacion.lumenes2}} Lm.<br>
+                                            Potencia: {{observacion.potenciaSugerida}}<br>
                                             Consumo Actual: {{observacion.consumoActual}} kWh. <br>
                                             Consumo Con Cambios: {{observacion.consumoEficiente}} kWh. (Rango de desvío 5%)<br>
-                                            Potencia: {{observacion.potenciaSugerida}}<br>
+                                            Diferencia: {{observacion.pagoAcutal}} <br>
+                                            Ahorro: {{observacion.diferencia}} <br>
+
                                         </li>
                                     </li>
                                 {{/each}}
