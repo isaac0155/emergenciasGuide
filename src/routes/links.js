@@ -92,7 +92,7 @@ var ret = (io) => {
             await pool.query('delete from paciente where idPersona = ?;', idPersona);
             await pool.query('delete from administradorcentro where idPersona = ?;', idPersona);
             await pool.query('INSERT INTO administradorgeneral (idPersona) VALUES (?)', idPersona);
-            
+
             socket.emit('server:reload');
         });
         socket.on('cliente:eliminarAdminGeneral', async (idPersona) => {
@@ -127,13 +127,13 @@ var ret = (io) => {
     });
 
     /* Rutas del servidor */
-    
+
     //Paginas Publicas
     //Paginas Publicas
 
     router.get('/', async (req, res) => {
         var sucursales = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.activo = 1;');
-        res.render('links/index', {sucursales});
+        res.render('links/index', { sucursales });
     });
     router.get('/sucursal/:id', async (req, res) => {
         const { id } = req.params;
@@ -259,7 +259,7 @@ var ret = (io) => {
         }
         await pool.query('insert into especialidad set ?;', [newEsp]);
         req.flash('success', 'Servicio ' + newServ.nombre + ' Agregado correctamente.');
-        res.redirect('panel/administradorGeneral/'+id)
+        res.redirect('panel/administradorGeneral/' + id)
     });
     router.get('/panel/administradorGeneral/:id', isAdminGen, async (req, res) => {
         const { id } = req.params;
@@ -357,9 +357,9 @@ var ret = (io) => {
         }
         await pool.query('update horario set ? where idHorario = ?', [horario, Number(req.body.idHorario)]);
         req.flash('success', 'Horario Modificado correctamente.');
-        if (req.user.tipoUser == 'Administrador General'){
+        if (req.user.tipoUser == 'Administrador General') {
             res.redirect('/links/panel/centrosSalud/detalle/sucursal/' + id)
-        }else{
+        } else {
             res.redirect('/links/panelAdminSuc/centrosSalud/detalle/sucursal/' + id)
         }
     });
@@ -382,7 +382,7 @@ var ret = (io) => {
     router.get('/panelAdminSuc', isAdminSucur, async (req, res) => {
         var sucursales = await pool.query('select * from sucursal a, administradorcentro b where a.idSucursal = b.idSucursal and b.idPersona = ?;', req.user.idPersona);
         //console.log(sucursales)
-        res.render('panelAdminSucur/index', {sucursales})
+        res.render('panelAdminSucur/index', { sucursales })
     });
     router.get('/panelAdminSuc/centrosSalud/detalle/sucursal/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
@@ -396,7 +396,7 @@ var ret = (io) => {
         var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
         res.render('panelAdminSucur/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
     });
-    
+
 
 
 
@@ -406,7 +406,7 @@ var ret = (io) => {
     //servidor de instrumentación electronica
     //servidor de instrumentación electronica
     //servidor de instrumentación electronica
-    
+
     router.post('/calidadaire', async (req, res) => {
         const { temperatura, humedad, calidadAire, presion, co2, pm, ventilador, iluminacion } = req.body;
         var proy = {
@@ -427,25 +427,25 @@ var ret = (io) => {
     router.get('/calidadaire', async (req, res) => {
         res.render('universidad/iel/calidadaire');
     });
-    
+
     //servidor de eficiencia energética
     //servidor de eficiencia energética
     //servidor de eficiencia energética
     //servidor de eficiencia energética
-    router.get('/calcEficienciaEnergetica', async(req, res)=>{
+    router.get('/calcEficienciaEnergetica', async (req, res) => {
         res.render('universidad/een/index');
     });
-    router.get('/calcEficienciaEnergetica/calculadora', async(req, res)=>{
+    router.get('/calcEficienciaEnergetica/calculadora', async (req, res) => {
         res.render('universidad/een/calculadora');
     });
-    router.get('/calcEficienciaEnergetica/eficienciailuminacion', async(req, res)=>{
+    router.get('/calcEficienciaEnergetica/eficienciailuminacion', async (req, res) => {
         res.render('universidad/een/eficienciailuminacion');
     });
-    router.get('/calcEficienciaEnergetica/vertodo/', async(req, res)=>{
+    router.get('/calcEficienciaEnergetica/vertodo/', async (req, res) => {
         var todos = await pool.query('select * from energia')
-        res.render('universidad/een/vertodos', {todos});
+        res.render('universidad/een/vertodos', { todos });
     });
-    router.get('/calcEficienciaEnergetica/ver/:id', async(req, res)=>{
+    router.get('/calcEficienciaEnergetica/ver/:id', async (req, res) => {
         var eficiencia = await pool.query('select * from energia where idEnergia = ?;', req.params.id)
 
         const fecha = new Date(eficiencia[0].fecha);
@@ -475,20 +475,24 @@ var ret = (io) => {
                     var consumo_diario = resultado[index].detalle[indx].consumo_diario
                     var area_iluminada = resultado[index].detalle[indx].area_iluminada
 
-                    if(tipo_foco!='led'){
-                        tipo_foco='Es recomendable usar iluminación LED'
-                    }else{
-                        tipo_foco='Ninguna Observación'
+                    if (tipo_foco != 'led') {
+                        tipo_foco = 'Es recomendable usar iluminación LED'
+                    } else {
+                        tipo_foco = 'Ninguna Observación'
                     }
                     var lumenes1 = calcularLumenes(area_iluminada);
                     var lumenes2 = 'Para iluminar adecuadamente su ambiente de ' + area_iluminada + ' m2. se necesita un foco led de: ' + lumenes1[0].lumenes + ' Lm. y el foco de usted es de: ' + (lumenes * area_iluminada * cantidad);
+                    var consumoActual = ((potencia / 1000) * (consumo_diario * 30)).toFixed(2);
+                    var consumoEficiente = ((calcularPotenciaFoco(lumenes1[0].lumenes / area_iluminada) / 1000) * (consumo_diario * 30)).toFixed(2);
 
                     var observacion = {
                         tipo_foco,
                         lumenes2,
-                        consumoActual: ((potencia / 1000) * (consumo_diario * 30)).toFixed(2),
-                        consumoEficiente: ((calcularPotenciaFoco(lumenes1[0].lumenes / area_iluminada) / 1000) * (consumo_diario * 30)).toFixed(2),
-                        potenciaSugerida: 'La potencia Sugeriada es de ' + calcularPotenciaFoco(lumenes1[0].lumenes)/15 + ' Watts.'
+                        potenciaSugerida: 'La potencia Sugeriada es de ' + calcularPotenciaFoco(lumenes1[0].lumenes) / 15 + ' Watts.',
+                        consumoActual,
+                        consumoEficiente,
+                        pagoAcutal: 'Usted paga ahora ' + consumoActual * 1.21 + ' Bs. Y con los cambios usted paga: ' + consumoEficiente * 1.21 + ' Bs.',
+                        diferencia: 'Ahorro mensualmente ' + ((consumoActual * 1.21) - (consumoEficiente * 1.21)) + ' Bs. solo en iluminacion de este ambiente'
                     }
                     resultado[index].detalle[indx].observacion = observacion;
                 });
@@ -496,7 +500,7 @@ var ret = (io) => {
         });
 
         //res.send(resultado)
-        res.render('universidad/een/ver', { eficiencia: eficiencia[0], resultado});
+        res.render('universidad/een/ver', { eficiencia: eficiencia[0], resultado });
     });
 
     function calcularPotenciaFoco(lumenes) {
@@ -526,15 +530,15 @@ var ret = (io) => {
 
         return resultados;
     }
-    
-    router.post('/calcEficienciaEnergetica/eficienciailuminacion', async(req, res)=>{
-        
+
+    router.post('/calcEficienciaEnergetica/eficienciailuminacion', async (req, res) => {
+
         //ordena los datos recibidos de body
         console.log(req.body);
         var newres = req.body;
         if (Array.isArray(newres['nombre_ambiente[]'])) {
             //console.log(true)
-            }else{
+        } else {
             //console.log(false)
             newres['nombre_ambiente[]'] = [newres['nombre_ambiente[]']]
         }
@@ -565,7 +569,7 @@ var ret = (io) => {
         const ambientes = datosRecibidos['nombre_ambiente[]'];
         //console.log(ambientes);
         const resultadoFinalOrdenado = {};
-        
+
         for (let i = 0; i < ambientes.length; i++) {
             const ambiente = ambientes[i];
             resultadoFinalOrdenado[ambiente] = resultadoFinal[i];
