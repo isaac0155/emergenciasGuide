@@ -40,9 +40,9 @@ app.use(session({
         path: '/',
         httpOnly: true,
         maxAge: 'COOKIE_TIMEOUT',
-        maxAge: 1000 * 60 * 60 * 24 * 365
+        maxAge: 1000 * 60 * 60 * 24 * 1
     },
-    maxAge: 1000 * 60 * 60 * 24 * 365,
+    maxAge: 1000 * 60 * 60 * 24 * 1,
     store: new MySQLStore(database)
 }));
 app.use(device.capture());

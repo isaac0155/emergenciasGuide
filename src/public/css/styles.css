@@ -18,7 +18,7 @@ body{
 }
 
 .fondo-negrito{
-    background-color: #000000a8;
+    background-color: #000000d0;
 }
 
 .index{
@@ -37,7 +37,7 @@ body{
     background-size: cover;
 }
 .masthead h1{
-    font-size: 4rem;
+    font-size: 2.5rem;
     margin: 0;
     padding: 0;
 }
@@ -47,3 +47,4 @@ body{
         font-size: 5.5rem;
     }
 }
+/*  */

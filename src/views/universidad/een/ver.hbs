@@ -1,0 +1,47 @@
+<div class="container p-4 ">
+    <div class="">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="text-center p-3 mb-4">
+                    <h2>Detalles y resultados de Eficiencia Energetica</h2>
+                    <h5>Fecha y hora: {{eficiencia.fecha}}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3" style="">
+            <div class="row g-0">
+                <div class="col-md-4" style="display: flex; justify-content: center;align-items: center;">
+                    <img src="/img/green-energy.png" class="img-fluid rounded-start" alt="..." width="200">
+                </div>
+                <div class="col-md-8">
+                    {{#each resultado}}
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre del Ambiente: {{nombre}}</h5>
+
+                            <div class="list-group">
+                                {{#each detalle}}
+                                    <li class="list-group-item list-group-item-action list-group-item-success">
+                                        Tipo de iluminación: {{tipo_foco}} <br>
+                                        Cantidad: {{cantidad}} <br>
+                                        Potencia: {{potencia}} Watts. <br>
+                                        Lumenes: {{lumenes}} Lm.<br>
+                                        Consumo Diario: {{consumo_diario}} Hrs. <br>
+                                        Area Iluminada: {{area_iluminada}} m2.<br>
+                                    
+                                        <li class="list-group-item list-group-item-action list-group-item-warning mb-5">
+                                            Iluminación: {{observacion.tipo_foco}} <br>
+                                            Lumenes: {{observacion.lumenes2}} Lm.<br>
+                                            Consumo Actual: {{observacion.consumoActual}} kWh. <br>
+                                            Consumo Con Cambios: {{observacion.consumoEficiente}} kWh. (Rango de desvío 5%)<br>
+                                            Potencia: {{observacion.potenciaSugerida}}<br>
+                                        </li>
+                                    </li>
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
