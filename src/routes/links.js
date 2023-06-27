@@ -10,7 +10,7 @@ var ret = (io) => {
     const { isAdminSucur } = require('../lib/auth')
     const { isRespAmbulancia } = require('../lib/auth')
     const upload = require('../lib/storage')
-
+//centrosalud
     io.on("connection", (socket) => {
         socket.on('cliente:verifUser', async (user) => {
             let existe = await pool.query('select COUNT(a.usuario) as user from persona a where a.usuario = ?', user)
@@ -61,7 +61,7 @@ var ret = (io) => {
         socket.on('cliente:buscarCentro', async (centro) => {
             //console.log(centro);
             var nombre = "%"+centro+"%"
-            var sucursales = await pool.query('SELECT a.idSucursal, a.nombre, a.detalleUbicacion, a.telefono1, b.nombreCentro FROM sucursal a, centroSalud b WHERE nombre LIKE ? and a.idCentroSalud = b.idCentroSalud;', [nombre]);
+            var sucursales = await pool.query('SELECT a.idSucursal, a.nombre, a.detalleUbicacion, a.telefono1, b.nombreCentro FROM sucursal a, centrosalud b WHERE nombre LIKE ? and a.idCentroSalud = b.idCentroSalud;', [nombre]);
             //console.log(sucursales);
             socket.emit('server:buscarCentro', sucursales);
         });
@@ -156,12 +156,12 @@ var ret = (io) => {
     //Paginas Publicas
 
     router.get('/directorio', async (req, res) => {
-        var sucursales = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.activo = 1;');
+        var sucursales = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idCentroSalud = b.idCentroSalud and a.activo = 1;');
         res.render('links/index', { sucursales });
     });
     router.get('/directorio/sucursal/:id', async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
         var horario = []
         if (sucursal[0].idHorario) {
             var idHorario = sucursal[0].idHorario;
@@ -189,13 +189,13 @@ var ret = (io) => {
         res.render('panel/nit', { nits })
     });
     router.get('/panel/centrosSalud', isAdminGen, async (req, res) => {
-        const nits = await pool.query('SELECT a.nit, a.idNit FROM nitCentro a WHERE a.idNit NOT IN (SELECT b.idNit FROM centroSalud b) ORDER BY idNit DESC;');
-        const registrado = await pool.query('select a.nit, b.*, (select count(*) from sucursal where sucursal.idCentroSalud = b.idCentroSalud) as sucursal from nitCentro a, centroSalud b where a.idNit = b.idNit ;');
+        const nits = await pool.query('SELECT a.nit, a.idNit FROM nitcentro a WHERE a.idNit NOT IN (SELECT b.idNit FROM centrosalud b) ORDER BY idNit DESC;');
+        const registrado = await pool.query('select a.nit, b.*, (select count(*) from sucursal where sucursal.idCentroSalud = b.idCentroSalud) as sucursal from nitcentro a, centrosalud b where a.idNit = b.idNit ;');
         res.render('panel/gestionarCentros', { nits, registrado })
     });
     router.get('/panel/centrosSalud/nuevo/:id', isAdminGen, async (req, res) => {
         const { id } = req.params;
-        const nit = await pool.query('select * from nitCentro where idNit = ?;', Number(id));
+        const nit = await pool.query('select * from nitcentro where idNit = ?;', Number(id));
         res.render('panel/nuevoCentro', { nit: nit[0] })
     });
     router.post('/panel/centrosSalud/nuevo/:id', isAdminGen, async (req, res) => {
@@ -214,12 +214,12 @@ var ret = (io) => {
     router.get('/panel/centrosSalud/detalle/:id', isAdminGen, async (req, res) => {
         const { id } = req.params;
         var centro = await pool.query('select a.*, b.nit from centrosalud a, nitcentro b where a.idCentroSalud = ? and a.idNit = b.idNit', id)
-        var sucursales = await pool.query('SELECT b.*, NULLIF((SELECT COUNT(c.idAdministradorCentro) FROM administradorcentro c WHERE c.idSucursal = b.idSucursal), 0) AS adminSucursal FROM centroSalud a, sucursal b WHERE a.idCentroSalud = b.idCentroSalud AND a.idCentroSalud = ?;', id);
+        var sucursales = await pool.query('SELECT b.*, NULLIF((SELECT COUNT(c.idAdministradorCentro) FROM administradorcentro c WHERE c.idSucursal = b.idSucursal), 0) AS adminSucursal FROM centrosalud a, sucursal b WHERE a.idCentroSalud = b.idCentroSalud AND a.idCentroSalud = ?;', id);
         res.render('panel/detalleCentro', { id, centro: centro[0], sucursales: sucursales })
     });
     router.get('/panel/centrosSalud/sucursal/nuevo/:id', isAdminGen, async (req, res) => {
         const { id } = req.params;
-        var centro = await pool.query('select * from centroSalud where idCentroSalud = ?', id);
+        var centro = await pool.query('select * from centrosalud where idCentroSalud = ?', id);
         res.render('panel/nuevaSucursal', { id, centro: centro[0] })
     });
     router.post('/panel/centrosSalud/sucursal/nuevo/:id', upload.single('image'), isAdminGen, async (req, res) => {
@@ -241,7 +241,7 @@ var ret = (io) => {
     });
     router.get('/panel/centrosSalud/detalle/sucursal/:id', isAdminGen, async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
         var admin = await pool.query('select a.idAdministradorCentro, b.* from administradorcentro a, persona b, sucursal c where c.idSucursal = ? and c.idSucursal = a.idSucursal and a.idPersona = b.idPersona;', Number(id));
         var horario = []
         if (sucursal[0].idHorario) {
@@ -298,7 +298,7 @@ var ret = (io) => {
         res.render('panel/administradorGeneral', { administradores });
     });
     router.get('/panel/ambulancias', isAdminGen, async (req, res) => {
-        const nits = await pool.query('SELECT a.nit, a.idNit FROM nitCentro a WHERE a.idNit NOT IN (SELECT b.idNit FROM centroSalud b) ORDER BY idNit DESC;');
+        const nits = await pool.query('SELECT a.nit, a.idNit FROM nitcentro a WHERE a.idNit NOT IN (SELECT b.idNit FROM centrosalud b) ORDER BY idNit DESC;');
         const registrado = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal;');
         res.render('panel/gestionarAmbulancias', { nits, registrado })
     });
@@ -349,7 +349,7 @@ var ret = (io) => {
 
     router.get('/panel/centrosSalud/sucursal/modificar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
         res.render('panel/modificarSucursal', { sucursal: sucursal[0] })
     });
     router.post('/panel/centrosSalud/sucursal/modificar/:id', upload.single('image'), isAdminSucur, async (req, res) => {
@@ -377,7 +377,7 @@ var ret = (io) => {
     });
     router.get('/panel/centrosSalud/sucursal/horario/nuevo/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
         res.render('panel/nuevoHorario', { sucursal: sucursal[0] })
     });
     router.post('/panel/centrosSalud/sucursal/horario/nuevo/:id', isAdminSucur, async (req, res) => {
@@ -410,7 +410,7 @@ var ret = (io) => {
     });
     router.get('/panel/centrosSalud/sucursal/horario/modificar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.nombre, a.idSucursal, a.idHorario, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
+        var sucursal = await pool.query('select a.nombre, a.idSucursal, a.idHorario, b.nombreCentro from sucursal a, centrosalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', Number(id));
         var horario = await pool.query('select * from horario where idHorario = ?;', sucursal[0].idHorario)
         res.render('panel/modificarHorario', { sucursal: sucursal[0], horario: horario[0] })
     });
@@ -443,7 +443,7 @@ var ret = (io) => {
     router.get('/panel/centrosSalud/sucursal/especialidad/gestionar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
         var idSucursal = Number(id)
-        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
+        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centrosalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
         var especialidadesSucursal = await pool.query('select a.*, b.idEspecialidadSucursal from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ? ORDER BY b.idEspecialidadSucursal DESC;', idSucursal)
         var especialidades = await pool.query('select a.* from especialidad a where (select count(*) from especialidadsucursal b where b.idEspecialidad = a.idEspecialidad and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
         res.render('panel/gestionarEspecilidadSucursal', { sucursal: sucursal[0], especialidadesSucursal, especialidades })
@@ -451,7 +451,7 @@ var ret = (io) => {
     router.get('/panel/centrosSalud/sucursal/servicio/gestionar/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
         var idSucursal = Number(id)
-        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centroSalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
+        var sucursal = await pool.query('select a.nombre, a.idSucursal, b.nombreCentro from sucursal a, centrosalud b where a.idSucursal = ? and a.idCentroSalud = b.idCentroSalud', idSucursal);
         var serviciosSucursal = await pool.query('select a.*, b.idServicioSucursal from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ? ORDER BY b.idServicioSucursal DESC;', idSucursal)
         var servicios = await pool.query('select a.* from servicio a where (select count(*) from serviciosucursal b where b.idServicio = a.idServicio and b.idSucursal = ?) = 0 ORDER BY a.nombre;', idSucursal)
         res.render('panel/gestionarServicioSucursal', { sucursal: sucursal[0], serviciosSucursal, servicios })
@@ -463,7 +463,7 @@ var ret = (io) => {
     });
     router.get('/panelAdminSuc/centrosSalud/detalle/sucursal/:id', isAdminSucur, async (req, res) => {
         const { id } = req.params;
-        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
+        var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centrosalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
         var horario = []
         if (sucursal[0].idHorario) {
             var idHorario = sucursal[0].idHorario;

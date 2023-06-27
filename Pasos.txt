@@ -6,3 +6,6 @@ git add .
 git commit -m "mensaje"
 git push -u origin main
 escribir
+
+git reset --hard HEAD
+git pull
