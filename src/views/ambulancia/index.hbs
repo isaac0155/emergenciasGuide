@@ -116,10 +116,6 @@
                     origin: { lat, lng },
                     destination: { lat: -17.397543, lng: -66.318236 },
                     travelMode: 'DRIVING',
-                    drivingOptions: {
-                        departureTime: new Date(Date.now()),
-                        trafficModel: 'optimistic'
-                    },
                 }).then((response) => {
                     directionsRenderer.setDirections(response);
                 }).catch((e) => window.alert("Directions request failed due to " + status));
