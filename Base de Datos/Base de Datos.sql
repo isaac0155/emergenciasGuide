@@ -14,6 +14,14 @@ create table cuidadoaire
     iluminacion   text null
 );
 
+create table energia
+(
+    idEnergia int auto_increment
+        primary key,
+    fecha     timestamp default current_timestamp() not null on update current_timestamp(),
+    detalle   text                                  null
+);
+
 create table especialidad
 (
     idEspecialidad int auto_increment
@@ -146,6 +154,7 @@ create table ambulancia
     placa        text null,
     idSucursal   int  null,
     idHorario    int  null,
+    disponible   int  null,
     constraint horario3
         foreign key (idHorario) references horario (idHorario),
     constraint persona4
@@ -206,8 +215,7 @@ create table serviciosucursal
         foreign key (idSucursal) references sucursal (idSucursal)
 );
 
-create
-    definer = root@localhost procedure verNit(IN nit text)
+create procedure verNit(IN nit text)
 begin
     declare idnit1 text default (select nitCentro.idNit from nitCentro where nitCentro.nit = nit);
     declare centro int;
@@ -225,16 +233,18 @@ begin
     end if;
 end;
 
-create
-    definer = root@localhost function verTipoUser(id int) returns text
+create function verTipoUser(id int) returns text
 begin
         declare tipoUser text;
         declare administrador int;
         declare pacient int;
         declare adminSucursal int;
+        declare ambulance int;
+
         set administrador = (select count(administradorGeneral.idPersona) from administradorGeneral, persona where administradorGeneral.idPersona = persona.idPersona and persona.idPersona = id);
         set pacient = (select count(paciente.idPersona) from paciente, persona where paciente.idPersona = persona.idPersona and persona.idPersona = id);
         set adminSucursal = (select count(administradorCentro.idPersona) from administradorCentro, persona where administradorCentro.idPersona = persona.idPersona and persona.idPersona = id);
+        set ambulance = (select count(*) from ambulancia where idPersona = 15);
 
         if(administrador > 0)then
             set tipoUser = 'Administrador General';
@@ -245,11 +255,13 @@ begin
         if(adminSucursal > 0)then
             set tipoUser = 'Administrador de Sucursal';
         end if;
+        if(ambulance > 0)then
+            set tipoUser = 'Responsable de Ambulancia';
+        end if;
         return tipoUser;
     end;
 
-create
-    definer = root@localhost procedure verUsuario(IN id int)
+create procedure verUsuario(IN id int)
 begin
         declare tipo text;
         declare usuario int;
@@ -264,6 +276,9 @@ begin
             end if;
             if(tipo = 'Administrador de Sucursal')then
                 select persona.alergias, persona.tipoSangre, persona.preferencias, persona.idPersona, persona.nombres, persona.apellidos, persona.carnet, persona.fechaNacimiento, persona.usuario, tipo as tipoUser, true as adminSucursal from persona where persona.idPersona = id;
+            end if;
+            if(tipo = 'Responsable de Ambulancia')then
+                select persona.alergias, persona.tipoSangre, persona.preferencias, persona.idPersona, persona.nombres, persona.apellidos, persona.carnet, persona.fechaNacimiento, persona.usuario, tipo as tipoUser, true as respAmbulancia from persona where persona.idPersona = id;
             end if;
         end if;
 
