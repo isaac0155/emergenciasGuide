@@ -16,8 +16,8 @@
             <div class="activacion p-3" id="activacion">
                 {{#if user}}
                     <div class="alert alert-warning text-center">
-                    Solicitar una Emergencia Médica a este Centro de Salud.
-                    <button href="#" class="btn btn-danger mt-0">Solicitar Emergencia</button>
+                    Solicitar una Emergencia Médica a este Centro de Salud. <br>
+                    <a href="/links/directorio/sucursal/{{sucursal.idSucursal}}/emergencias" class="btn btn-danger mt-2">Solicitar Emergencia</a>
                 {{else}}
                     <div class="alert alert-danger text-center">
                     Iniciar Sesión para solicitar una Emergencia Médica.
@@ -165,7 +165,9 @@
         </div>
     </div>
 </div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDj9Zues1ltWBLzLDZ-5v5JzvRSHkg9bBE&callback=initMap&v=weekly" defer></script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_NYgArvBJRyXFVfxt-O71UtH9wJhtVYk&callback=initMap&v=weekly"
+    defer></script>
 <script>
     function initMap() {
         const centroSalud = { lat: {{sucursal.latitud}}, lng: {{sucursal.longitud}} };

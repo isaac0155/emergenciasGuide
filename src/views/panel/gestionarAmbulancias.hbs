@@ -1,0 +1,133 @@
+<div class="container p-4 ">
+    <div class="text-center p-3 mb-0 align-items-center">
+        <h2>Gestión de Ambulancias</h2>
+        <br>
+        <span class="badge text-bg-danger" style="display: none;">
+            <h6>Se ha eliminado exitosamente el NIT</h6>
+        </span>
+    </div>
+    {{!--  --}}
+    <div class="mb-2" style="">
+        <ol class="list-group">
+        </ol>
+    </div>
+    {{!--  --}}
+    <div class="row">
+        <div class="col-sm-6 mb-3 mb-sm-0">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Registrar nuevo</h5>
+                <ol class="list-group list-group">
+                    <li class="list-group-item list-group-item-action">
+                        <p class="text-center">Registrar una nueva Ambulancia</p>
+                        <div class="d-grid gap-2">
+                            <a href="/links/panel/ambulancias/nuevo"class="btn btn-success">Nueva Ambulancia</a>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Lista de Ambulancias registradas</h5>
+                <ol class="list-group ">
+                    {{#each registrado}}
+                        {{#if disponible}}
+                            
+                        <li class="list-group-item list-group-item-action" style="background: rgb(226, 253, 240);">
+                            <h5 class="card-title text-success">Disponible: {{placa}}</h5>
+                        {{else}} 
+                        <li class="list-group-item list-group-item-action " style="background: rgb(255, 226, 226);">
+                            <h5 class="card-title text-danger">No disponible: {{placa}}</h5>
+                            <hr>
+                        {{/if}}
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Tipo Vehículo</td>
+                                        <td>{{tipoVeiculo}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cel. Ambulancia</td>
+                                        <td>{{telefono}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Conductor</td>
+                                        <td>{{nombres}} {{apellidos}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CI</td>
+                                        <td>{{carnet}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Centro de Salud</td>
+                                        <td>{{nombre}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <a href="/links/panel/ambulancias/detalle/{{idAmbulancia}}" class="btn btn-success mt-0">Ver detalles</a>
+                            </div>
+                        </li>
+                    <div class="p-2"></div>
+                    {{else}}
+                    <p>Aún no hay Ambulancias registradas.</p>
+                    {{/each}}
+                </ol>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var btn = document.getElementById('buscarNit');
+    var inputNit = document.querySelector('input#nit');
+    var busqueda = document.querySelector('ol.list-group');
+
+    function buscarNit(){
+        inputNit.value = Number(inputNit.value);
+        //console.log(inputNit.value)
+        socket.emit('cliente:buscarNit', inputNit.value);
+    }
+    socket.on('server:nitEncontrado', (nit)=>{
+        //console.log(nit[0][0].nombreCentro)
+        busqueda.innerHTML = '';
+        //console.log(nit[0][0])
+        busqueda.append(nitDiv(nit[0][0]));
+        
+    });
+    function nitDiv(nit){
+        const div = document.createElement("li");
+        if(nit.propietario){
+            div.className='list-group-item list-group-item-success list-group-item-action';
+            div.innerHTML = `
+                Nit: ${nit.nit}<br>
+                El NIT ha sido registrado al centro de salud: ${nit.nombreCentro}<br>
+                Propietario del centro de salud: ${nit.propietario}<br>
+                Sucursales asignadas: ${nit.sucursales}<br>
+                <br>
+                <a href="/links/panel/centrosSalud/detalle/${nit.idCentroSalud}" class="btn btn-outline-success">Ver Detalles</a>
+            `;
+        }else{
+            if(!nit.nit){
+                div.innerHTML = `
+                    Ninguna coincidencia para ${inputNit.value}.
+                `;
+                div.className='list-group-item list-group-item-danger list-group-item-action';
+            }else{
+
+                div.innerHTML = `
+                    NIT: ${nit.nit}<br>
+                    ESTE NIT NO FUE ASIGNADO A NINGÚN CENTRO DE SALUD
+                    <br>
+                    <a href="/links/panel/centrosSalud/nuevo/${nit.idNit}"class="btn btn-outline-success">Asignar</a>
+                `;
+                div.className='list-group-item list-group-item-warning list-group-item-action';
+            }
+        }
+        return div;
+    }
+    
+</script>

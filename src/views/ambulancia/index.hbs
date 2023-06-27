@@ -1,0 +1,62 @@
+<div class="container p-4">
+    <div class="row">
+
+        <div class="card">
+            <div class="text-center pt-5">
+                <h3 class="text-danger">Panel de Emergencias</h3>
+                <h6 class="text-success">de {{ambulancia.nombre}}</h6>
+            </div>
+                <div class="card-body col-md-4 mx-auto text-center">
+                    <hr>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr>
+                                <td>Tipo Vehículo</td>
+                                <td>{{ambulancia.tipoVeiculo}}</td>
+                            </tr>
+                            <tr>
+                                <td>Placas</td>
+                                <td>{{ambulancia.placa}}</td>
+                            </tr>
+                            <tr>
+                                <td>Cel. Ambulancia</td>
+                                <td>{{ambulancia.telefono}}</td>
+                            </tr>
+                            <tr>
+                                <td>Conductor</td>
+                                <td>{{user.nombres}} {{user.apellidos}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div class="activacion" id="activacion">
+                {{#if ambulancia.disponible}}
+                <div class="alert alert-success text-center">
+                    Ambulancia Libre y visible para todos los Usuarios.
+                    <button type="button" onclick="desactivarAmbulancia({{ambulancia.idAmbulancia}})"
+                        class="btn btn-danger mt-0">Desactivar</button>
+                    {{else}}
+                    <div class="alert alert-danger text-center">
+                        Ambulancia Ocupada, no recibirá ordenes de Emergencias
+                        <button type="button" onclick="activarAmbulancia({{ambulancia.idAmbulancia}})"
+                            class="btn btn-success mt-0">Activar</button>
+                        {{/if}}
+                    </div>
+                </div>
+                <div class="mt-2">
+                        
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function desactivarAmbulancia(id){
+            socket.emit('cliente:desactivarAmbulancia', id)
+        }
+        function activarAmbulancia(id){
+            socket.emit('cliente:activarAmbulancia', id)
+        }
+        socket.on('server:reload', async()=>{
+            location.reload();
+        })
+    </script>

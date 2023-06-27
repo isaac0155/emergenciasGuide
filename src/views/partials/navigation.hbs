@@ -1,4 +1,4 @@
-{{#if desk}}
+
    <nav class="navbar navbar-expand-lg colorNav">
         <div class="container">
             <a class="navbar-brand text-white" href="/">
@@ -23,6 +23,13 @@
                             </a>
                         </li>
                     {{/if}}
+                    {{#if user.respAmbulancia}}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/links/ambulancia/emergencias" role="button">
+                                Mi Ambulancia
+                            </a>
+                        </li>
+                    {{/if}}
                     {{#if user.adminSucursal}}
                         <li class="nav-item ">
                             <a class="nav-link " style="color:#1fb919">
@@ -36,7 +43,7 @@
                         </li>
                     {{/if}}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="/links" role="button">
+                            <a class="nav-link text-white" href="/links/directorio" role="button">
                                 Directorio Medico
                             </a>
                         </li>
@@ -72,49 +79,3 @@
             </div>
         </div>
     </nav>
-{{else}}
-    <nav class="navbar navbar-dark bg-dark ">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Emergencias.guide</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Emergencias.guide</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Inicio</a>
-                    </li>
-                    {{#if user}}    
-                        <li class="nav-item">
-                            <a class="nav-link" href="/profile" role="button">
-                                Mi Perfil
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logout" role="button">
-                                Cerrar Sesión
-                            </a>
-                        </li>
-                    {{else}}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/signin" role="button">
-                                Iniciar Sesión
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/signup" role="button">
-                                Registrarse
-                            </a>
-                        </li>
-                    {{/if}}
-                </ul>
-            </div>
-            </div>
-        </div>
-    </nav>
-{{/if}}

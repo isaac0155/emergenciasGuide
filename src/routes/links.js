@@ -8,6 +8,7 @@ var ret = (io) => {
     const { isLoggedIn } = require('../lib/auth')
     const { isAdminGen } = require('../lib/auth')
     const { isAdminSucur } = require('../lib/auth')
+    const { isRespAmbulancia } = require('../lib/auth')
     const upload = require('../lib/storage')
 
     io.on("connection", (socket) => {
@@ -49,6 +50,20 @@ var ret = (io) => {
         socket.on('cliente:buscarPersona', async (usuario, sucursal) => {
             var personas = await pool.query('select a.nombres, a.apellidos, a.carnet, a.usuario, a.idPersona, (select count(*) from administradorcentro f where f.idPersona = a.idPersona) as sucursales from persona a where a.usuario = ? and (select count(*) from administradorgeneral b where b.idPersona = a.idPersona) = 0 and (select count(*) from administradorcentro c where c.idPersona = a.idPersona and c.idSucursal = ?) = 0;', [usuario, sucursal]);
             socket.emit('server:buscarPersona', personas);
+        });
+        socket.on('cliente:buscarUser', async (usuario) => {
+            var nombre = "%" + usuario + "%"
+            // console.log(usuario);
+            var per = await pool.query('select a.nombres, a.apellidos, a.carnet, a.usuario, a.idPersona from persona a where a.usuario LIKE ? and (select count(*) from paciente b where b.idPersona = a.idPersona) != 0;', [nombre]);
+            // console.log(per);
+            socket.emit('server:buscarUser', per);
+        });
+        socket.on('cliente:buscarCentro', async (centro) => {
+            //console.log(centro);
+            var nombre = "%"+centro+"%"
+            var sucursales = await pool.query('SELECT a.idSucursal, a.nombre, a.detalleUbicacion, a.telefono1, b.nombreCentro FROM sucursal a, centroSalud b WHERE nombre LIKE ? and a.idCentroSalud = b.idCentroSalud;', [nombre]);
+            //console.log(sucursales);
+            socket.emit('server:buscarCentro', sucursales);
         });
         socket.on('cliente:newAdminSucursal', async (idPersona, idSucursal) => {
             await pool.query('insert into administradorcentro set idPersona = ?, idSucursal = ?;', [idPersona, idSucursal]);
@@ -117,6 +132,15 @@ var ret = (io) => {
                 }
             }
         });
+        socket.on('cliente:activarAmbulancia', async (idAmbulancia) => {
+            await pool.query('update ambulancia set disponible = 1 where idAmbulancia = ?;', idAmbulancia);
+            socket.emit('server:reload');
+        });
+        socket.on('cliente:desactivarAmbulancia', async (idAmbulancia) => {
+            await pool.query('update ambulancia set disponible = null where idAmbulancia = ?;', idAmbulancia);
+            socket.emit('server:reload');
+        });
+
 
         //servidor de instrumentación electronica
         socket.on('client:calidadAire', async () => {
@@ -131,11 +155,11 @@ var ret = (io) => {
     //Paginas Publicas
     //Paginas Publicas
 
-    router.get('/', async (req, res) => {
+    router.get('/directorio', async (req, res) => {
         var sucursales = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.activo = 1;');
         res.render('links/index', { sucursales });
     });
-    router.get('/sucursal/:id', async (req, res) => {
+    router.get('/directorio/sucursal/:id', async (req, res) => {
         const { id } = req.params;
         var sucursal = await pool.query('select a.*, b.nombreCentro from sucursal a, centroSalud b where a.idCentroSalud = b.idCentroSalud and a.idSucursal = ?', Number(id))
         var horario = []
@@ -147,8 +171,14 @@ var ret = (io) => {
         var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
         res.render('links/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
     });
+    
+    //cualquier usuario que haya iniciado sesión
+    router.get('/directorio/sucursal/3/emergencias', isLoggedIn, async (req, res) => {
+        res.send(req.user)
+    });
+    
 
-    //Paginas que sólo puede ver el Administrador General
+    //Paginas que sólo puede ver el Administrador General buscarPersona
     //Paginas que sólo puede ver el Administrador General
 
     router.get('/panel', isAdminGen, async (req, res) => {
@@ -220,7 +250,8 @@ var ret = (io) => {
         }
         var especialidades = await pool.query('select a.* from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ?;', Number(id))
         var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
-        res.render('panel/detalleSucursal', { sucursal: sucursal[0], admin, horario: horario[0], especialidades, servicios })
+        var ambulancias = await pool.query('select a.*, b.idPersona, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idSucursal = ?;', id)
+        res.render('panel/detalleSucursal', { sucursal: sucursal[0], admin, horario: horario[0], especialidades, servicios, ambulancias })
     });
     router.post('/panel/administradorEspecialidad', isAdminGen, async (req, res) => {
         const { nombre, detalle } = req.body
@@ -266,7 +297,53 @@ var ret = (io) => {
         var administradores = await pool.query('select a.idPersona, a.nombres, a.apellidos, a.carnet, a.usuario from persona a, administradorGeneral b where a.idPersona = b.idPersona and a.idPersona != ?;', id);
         res.render('panel/administradorGeneral', { administradores });
     });
-
+    router.get('/panel/ambulancias', isAdminGen, async (req, res) => {
+        const nits = await pool.query('SELECT a.nit, a.idNit FROM nitCentro a WHERE a.idNit NOT IN (SELECT b.idNit FROM centroSalud b) ORDER BY idNit DESC;');
+        const registrado = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal;');
+        res.render('panel/gestionarAmbulancias', { nits, registrado })
+    });
+    router.get('/panel/ambulancias/detalle/:id', isAdminGen, async (req, res) => {
+        const {id} = req.params;
+        var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
+        res.render('panel/verAmbulancias', { ambulancia:ambulancia[0] })
+    });
+    router.get('/panel/ambulancias/modificar/:id', isAdminGen, async (req, res) => {
+        const {id} = req.params;
+        var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
+        res.render('panel/modificarAmbulancia', { ambulancia:ambulancia[0] })
+    });
+    router.post('/panel/ambulancias/modificar/:id', isAdminGen, async (req, res) => {
+        const {id} =req.params;
+        const { tipoVeiculo, telefono, placa, idPersona, idSucursal } = req.body
+        var cambios = {
+            tipoVeiculo,
+            telefono,
+            placa,
+            idPersona,
+            idSucursal
+        }
+        req.flash('success', 'Datos modificados correctamente')
+        var camb = await pool.query('update ambulancia set ? where idAmbulancia = ?', [cambios, id])
+        res.redirect('/links/panel/ambulancias/detalle/' + id)
+    });
+    router.get('/panel/ambulancias/nuevo', isAdminGen, async (req, res) => {
+        res.render('panel/nuevaAmbulancia')
+    });
+    router.post('/panel/ambulancias/nuevo', isAdminGen, async (req, res) => {
+        const { tipoVeiculo, telefono, placa, idPersona, idSucursal } = req.body
+        var cambios = {
+            tipoVeiculo,
+            telefono,
+            placa,
+            idPersona,
+            idSucursal
+        }
+        req.flash('success', 'Ambulancia Registrada correctamente')
+        var camb = await pool.query('insert into ambulancia set ? ', [cambios])
+        res.redirect('/links/panel/ambulancias/detalle/')
+    });
+    
+    
     //paginas que puede ver el administrador de susursal y general (comparten ambos)
     //paginas que puede ver el administrador de susursal y general (comparten ambos)
 
@@ -394,19 +471,29 @@ var ret = (io) => {
         }
         var especialidades = await pool.query('select a.* from especialidad a, especialidadsucursal b  where a.idEspecialidad = b.idEspecialidad and b.idSucursal = ?;', Number(id))
         var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
-        res.render('panelAdminSucur/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
+        var ambulancias = await pool.query('select a.*, b.idPersona, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idSucursal = ?;', id)
+        res.render('panelAdminSucur/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios, ambulancias })
     });
-
-
-
-
+    router.get('/panelAdminSuc/ambulancias/detalle/:id', isAdminSucur, async (req, res) => {
+        const { id } = req.params;
+        var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
+        res.render('panelAdminSucur/verAmbulancias', { ambulancia: ambulancia[0] })
+    });
+    
+    //paginas que puede ver el responsable de ambulancia, administrador de susursal y general (comparten todos)
+    //paginas que puede ver el responsable de ambulancia, administrador de susursal y general (comparten todos)
+    router.get('/ambulancia/emergencias', isRespAmbulancia, async (req, res) => {
+        var ambulancia = await pool.query('select a.*, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and b.idPersona= ?;', [req.user.idPersona])
+        res.render('ambulancia/index', { ambulancia: ambulancia[0] })
+    });
+    
+    
 
 
     //servidor de instrumentación electronica
     //servidor de instrumentación electronica
     //servidor de instrumentación electronica
     //servidor de instrumentación electronica
-
     router.post('/calidadaire', async (req, res) => {
         const { temperatura, humedad, calidadAire, presion, co2, pm, ventilador, iluminacion } = req.body;
         var proy = {
@@ -502,7 +589,6 @@ var ret = (io) => {
         //res.send(resultado)
         res.render('universidad/een/ver', { eficiencia: eficiencia[0], resultado });
     });
-
     function calcularPotenciaFoco(lumenes) {
         // Eficiencia lumínica promedio de los focos LED
         const eficienciaLuminica = 100; // lm/W (valor promedio)
@@ -515,7 +601,6 @@ var ret = (io) => {
 
         return potenciaRedondeada
     }
-
     function calcularLumenes(metrosCuadrados) {
         const areas = [
             { iluminancia: 750 }
@@ -530,7 +615,6 @@ var ret = (io) => {
 
         return resultados;
     }
-
     router.post('/calcEficienciaEnergetica/eficienciailuminacion', async (req, res) => {
 
         //ordena los datos recibidos de body
