@@ -6,6 +6,26 @@
                 <h3 class="text-danger">Panel de Emergencias</h3>
                 <h6 class="text-success">de {{ambulancia.nombre}}</h6>
             </div>
+            <div class="p-2">
+                <div id="dragend"></div>
+                <div id="map" style="height: 550px; width: 100%;">
+                    Revise su conexión a intenet.
+                </div>
+            </div>
+            <div class="activacion" id="activacion">
+                {{#if ambulancia.disponible}}
+                <div class="alert alert-success text-center">
+                    Ambulancia Libre y visible para todos los Usuarios.
+                    <button type="button" onclick="desactivarAmbulancia({{ambulancia.idAmbulancia}})"
+                        class="btn btn-danger mt-0">Desactivar</button>
+                    {{else}}
+                    <div class="alert alert-danger text-center">
+                        Ambulancia Ocupada, no recibirá ordenes de Emergencias
+                        <button type="button" onclick="activarAmbulancia({{ambulancia.idAmbulancia}})"
+                            class="btn btn-success mt-0">Activar</button>
+                        {{/if}}
+                    </div>
+                </div>
                 <div class="card-body col-md-4 mx-auto text-center">
                     <hr>
                     <table class="table table-sm">
@@ -29,34 +49,83 @@
                         </tbody>
                     </table>
                 </div>
-            <div class="activacion" id="activacion">
-                {{#if ambulancia.disponible}}
-                <div class="alert alert-success text-center">
-                    Ambulancia Libre y visible para todos los Usuarios.
-                    <button type="button" onclick="desactivarAmbulancia({{ambulancia.idAmbulancia}})"
-                        class="btn btn-danger mt-0">Desactivar</button>
-                    {{else}}
-                    <div class="alert alert-danger text-center">
-                        Ambulancia Ocupada, no recibirá ordenes de Emergencias
-                        <button type="button" onclick="activarAmbulancia({{ambulancia.idAmbulancia}})"
-                            class="btn btn-success mt-0">Activar</button>
-                        {{/if}}
-                    </div>
-                </div>
-                <div class="mt-2">
-                        
-                </div>
             </div>
+
         </div>
     </div>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_NYgArvBJRyXFVfxt-O71UtH9wJhtVYk&callback=initMap&v=weekly"
+        defer></script>
     <script>
-        function desactivarAmbulancia(id){
+        function desactivarAmbulancia(id) {
             socket.emit('cliente:desactivarAmbulancia', id)
         }
-        function activarAmbulancia(id){
+        function activarAmbulancia(id) {
             socket.emit('cliente:activarAmbulancia', id)
         }
-        socket.on('server:reload', async()=>{
+        socket.on('server:reload', async () => {
             location.reload();
         })
+    </script>
+    <script>
+        function initMap() {
+            const directionsService = new google.maps.DirectionsService();
+            const directionsRenderer = new google.maps.DirectionsRenderer();
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -17.396593601116376, lng: -66.16100666581964 },
+                zoom: 16,
+                 styles: [
+                    {
+                        featureType: "poi.business",
+                        stylers: [{ visibility: "off" }],
+                    },
+                    {
+                        featureType: "transit",
+                        elementType: "labels.icon",
+                        stylers: [{ visibility: "off" }],
+                    },
+                ],
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: true,
+                streetViewControl: false,
+                rotateControl: false
+            });
+            directionsRenderer.setMap(map);
+            getLocation()
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                }
+            }
+            var lat;
+            var lng;
+            function showPosition(position) {
+                lat = position.coords.latitude;
+                lng = position.coords.longitude;
+                map.setCenter(new google.maps.LatLng(lat, lng));
+                marker = new google.maps.Marker({
+                    position: { lat, lng },
+                    map: map,
+                    icon: 'https://i.ibb.co/Dzx5nN9/target-2.png',
+                });
+                
+                directionsService.route({
+                    origin: { lat, lng },
+                    destination: { lat: -17.397543, lng: -66.318236 },
+                    travelMode: 'DRIVING',
+                    drivingOptions: {
+                        departureTime: new Date(Date.now()),
+                        trafficModel: 'optimistic'
+                    },
+                }).then((response) => {
+                    directionsRenderer.setDirections(response);
+                }).catch((e) => window.alert("Directions request failed due to " + status));
+            }
+
+        }
+
+        window.initMap = initMap;
     </script>
