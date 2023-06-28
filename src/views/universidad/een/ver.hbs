@@ -8,6 +8,10 @@
                     <img src="/img/resultados.png" class="img-fluid rounded-start" alt="..." width="100">
                 </div>
                     <h5>Fecha y hora: {{eficiencia.fecha}}</h5>
+                    <div class="text-success p-3" style="background: rgb(235, 235, 235);">
+                        <p class="text-success fs-4">Ahorro kWh: {{wt}}</p>
+                        <p class="text-success fs-4">Ahorro Mensual: {{bs}} Bs.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -26,12 +30,13 @@
                                 {{#each detalle}}
                                     <li class="list-group-item list-group-item-success mb-3">
                                         <div class="text-center p-3">
-                                            Tipo de iluminación: {{tipo_foco}} <br>
-                                            Cantidad: {{cantidad}} <br>
-                                            Potencia: {{potencia}} Watts. <br>
-                                            Lumenes: {{lumenes}} Lm.<br>
-                                            Consumo Diario: {{consumo_diario}} Hrs. <br>
-                                            Area Iluminada: {{area_iluminada}} m2.<br>
+                                            Tipo de iluminación : {{tipo_foco}} <br>
+                                            Cantidad puntos : {{cantidad}} <br>
+                                            Potencia : {{potencia}} Watts. <br>
+                                            Lumenes : {{lumenes}} Lm.<br>
+                                            Consumo Diario : {{consumo_diario}} Hrs. <br>
+                                            Area Iluminada : {{area_iluminada}} m2.<br>
+                                            Ambientes : {{ambientes}}<br>
                                         </div>
 
                                         <table class="table p-3 list-group-item">
@@ -69,6 +74,10 @@
                                                 <tr class="list-group-item-action table-warning">
                                                     <td>Ahorro</td>
                                                     <td>{{observacion.diferencia}}</td>
+                                                </tr>
+                                                <tr class="list-group-item-action table-danger">
+                                                    <td>Ahorro Detallado</td>
+                                                    <td>{{observacion.ahorro}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

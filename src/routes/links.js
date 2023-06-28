@@ -10,7 +10,7 @@ var ret = (io) => {
     const { isAdminSucur } = require('../lib/auth')
     const { isRespAmbulancia } = require('../lib/auth')
     const upload = require('../lib/storage')
-//centrosalud
+    //centrosalud
     io.on("connection", (socket) => {
         socket.on('cliente:verifUser', async (user) => {
             let existe = await pool.query('select COUNT(a.usuario) as user from persona a where a.usuario = ?', user)
@@ -60,7 +60,7 @@ var ret = (io) => {
         });
         socket.on('cliente:buscarCentro', async (centro) => {
             //console.log(centro);
-            var nombre = "%"+centro+"%"
+            var nombre = "%" + centro + "%"
             var sucursales = await pool.query('SELECT a.idSucursal, a.nombre, a.detalleUbicacion, a.telefono1, b.nombreCentro FROM sucursal a, centrosalud b WHERE nombre LIKE ? and a.idCentroSalud = b.idCentroSalud;', [nombre]);
             //console.log(sucursales);
             socket.emit('server:buscarCentro', sucursales);
@@ -171,12 +171,12 @@ var ret = (io) => {
         var servicios = await pool.query('select a.* from servicio a, serviciosucursal b  where a.idServicio = b.idServicio and b.idSucursal = ?;', Number(id))
         res.render('links/detalleSucursal', { sucursal: sucursal[0], horario: horario[0], especialidades, servicios })
     });
-    
+
     //cualquier usuario que haya iniciado sesión
     router.get('/directorio/sucursal/3/emergencias', isLoggedIn, async (req, res) => {
         res.send(req.user)
     });
-    
+
 
     //Paginas que sólo puede ver el Administrador General buscarPersona
     //Paginas que sólo puede ver el Administrador General
@@ -303,17 +303,17 @@ var ret = (io) => {
         res.render('panel/gestionarAmbulancias', { nits, registrado })
     });
     router.get('/panel/ambulancias/detalle/:id', isAdminGen, async (req, res) => {
-        const {id} = req.params;
+        const { id } = req.params;
         var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
-        res.render('panel/verAmbulancias', { ambulancia:ambulancia[0] })
+        res.render('panel/verAmbulancias', { ambulancia: ambulancia[0] })
     });
     router.get('/panel/ambulancias/modificar/:id', isAdminGen, async (req, res) => {
-        const {id} = req.params;
+        const { id } = req.params;
         var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
-        res.render('panel/modificarAmbulancia', { ambulancia:ambulancia[0] })
+        res.render('panel/modificarAmbulancia', { ambulancia: ambulancia[0] })
     });
     router.post('/panel/ambulancias/modificar/:id', isAdminGen, async (req, res) => {
-        const {id} =req.params;
+        const { id } = req.params;
         const { tipoVeiculo, telefono, placa, idPersona, idSucursal } = req.body
         var cambios = {
             tipoVeiculo,
@@ -342,8 +342,8 @@ var ret = (io) => {
         var camb = await pool.query('insert into ambulancia set ? ', [cambios])
         res.redirect('/links/panel/ambulancias/detalle/')
     });
-    
-    
+
+
     //paginas que puede ver el administrador de susursal y general (comparten ambos)
     //paginas que puede ver el administrador de susursal y general (comparten ambos)
 
@@ -479,15 +479,15 @@ var ret = (io) => {
         var ambulancia = await pool.query('select a.*, b.nombres, b.apellidos, b.carnet, b.usuario, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and a.idAmbulancia = ?;', id)
         res.render('panelAdminSucur/verAmbulancias', { ambulancia: ambulancia[0] })
     });
-    
+
     //paginas que puede ver el responsable de ambulancia, administrador de susursal y general (comparten todos)
     //paginas que puede ver el responsable de ambulancia, administrador de susursal y general (comparten todos)
     router.get('/ambulancia/emergencias', isRespAmbulancia, async (req, res) => {
         var ambulancia = await pool.query('select a.*, c.nombre from ambulancia a, persona b, sucursal c where a.idPersona = b.idPersona and a.idSucursal = c.idSucursal and b.idPersona= ?;', [req.user.idPersona])
         res.render('ambulancia/index', { ambulancia: ambulancia[0] })
     });
-    
-    
+
+
 
 
     //servidor de instrumentación electronica
@@ -529,11 +529,11 @@ var ret = (io) => {
         res.render('universidad/een/eficienciailuminacion');
     });
     router.get('/calcEficienciaEnergetica/vertodo/', async (req, res) => {
-        var todos = await pool.query('select * from energia')
+        var todos = await pool.query('select * from energia ORDER BY idEnergia DESC')
         res.render('universidad/een/vertodos', { todos });
     });
     router.get('/calcEficienciaEnergetica/ver/:id', async (req, res) => {
-        var eficiencia = await pool.query('select * from energia where idEnergia = ?;', req.params.id)
+        var eficiencia = await pool.query('select * from energia where idEnergia = ?', req.params.id)
 
         const fecha = new Date(eficiencia[0].fecha);
         const dia = fecha.getDate();
@@ -546,6 +546,10 @@ var ret = (io) => {
         const horaFormateada = hora < 10 ? `0${hora}` : hora;
         const minutosFormateados = minutos < 10 ? `0${minutos}` : minutos;
         const fechaFormateada = `${diaFormateado}/${mesFormateado}/${anio} - ${horaFormateada}:${minutosFormateados}`;
+
+        var wt = 0;
+        var bs = 0;
+
 
         eficiencia[0].fecha = fechaFormateada;
         var resultado = JSON.parse(eficiencia[0].detalle);
@@ -561,6 +565,8 @@ var ret = (io) => {
                     var potencia = resultado[index].detalle[indx].potencia
                     var consumo_diario = resultado[index].detalle[indx].consumo_diario
                     var area_iluminada = resultado[index].detalle[indx].area_iluminada
+                    var ambientess = resultado[index].detalle[indx].ambientes
+                    // console.log(ambientess);
 
                     if (tipo_foco != 'led') {
                         tipo_foco = 'Es recomendable usar iluminación LED'
@@ -578,16 +584,19 @@ var ret = (io) => {
                         potenciaSugerida: 'La potencia Sugeriada es de ' + calcularPotenciaFoco(lumenes1[0].lumenes) / 15 + ' Watts.',
                         consumoActual,
                         consumoEficiente,
-                        pagoAcutal: 'Usted paga ahora ' + consumoActual * 1.21 + ' Bs. Y con los cambios usted paga: ' + consumoEficiente * 1.21 + ' Bs.',
-                        diferencia: 'Ahorro mensualmente ' + ((consumoActual * 1.21) - (consumoEficiente * 1.21)) + ' Bs. solo en iluminacion de este ambiente'
+                        pagoAcutal: 'Usted paga ahora ' + consumoActual * 1.41 + ' Bs. Y con los cambios usted paga: ' + consumoEficiente * 1.21 + ' Bs.',
+                        diferencia: 'Ahorro mensualmente ' + ((consumoActual * 1.41) - (consumoEficiente * 1.21)).toFixed(2) + ' Bs. solo en iluminacion de este ambiente',
+                        ahorro: 'Ahorro de kWh ' + ((consumoActual - consumoEficiente) * Number(ambientess)).toFixed(2) + ' -> Bs. ' + (((consumoActual * 1.41) - (consumoEficiente * 1.21)) * Number(ambientess)).toFixed(2) + '. Por ' + ambientess + ' Ambientes'
                     }
                     resultado[index].detalle[indx].observacion = observacion;
+                    wt = ((consumoActual - consumoEficiente) * Number(ambientess) + Number(wt)).toFixed(2);
+                    bs = ((((consumoActual * 1.41) - (consumoEficiente * 1.21)) * Number(ambientess)) + Number(bs)).toFixed(2)
                 });
             });
         });
 
         //res.send(resultado)
-        res.render('universidad/een/ver', { eficiencia: eficiencia[0], resultado });
+        res.render('universidad/een/ver', { eficiencia: eficiencia[0], resultado, wt, bs });
     });
     function calcularPotenciaFoco(lumenes) {
         // Eficiencia lumínica promedio de los focos LED
