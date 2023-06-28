@@ -6,6 +6,36 @@
                 <h3 class="text-danger">Panel de Emergencias</h3>
                 <h6 class="text-success">de {{ambulancia.nombre}}</h6>
             </div>
+            <div class="form-control col-md-4 mx-auto">
+                <div class="text-left">
+                    Ubicación Actual: <p id="actual"></p> 
+                </div>
+                <div class="text-rigth">
+                    Destino: <p id="destino"></p>
+                </div>
+            </div>
+            <table class="table text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <img src="/img/car.png" alt="" class="ing-fluid" width="20">
+                            Distancia</th>
+                        <th scope="col">
+                            <img src="/img/clock.png" alt="" class="ing-fluid" width="20">
+                            Tiempo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p id="distancia"></p>
+                        </td>
+                        <td>
+                            <p id="duracion"></p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <div class="p-2">
                 <div id="dragend"></div>
                 <div id="map" style="height: 550px; width: 100%;">
@@ -27,6 +57,7 @@
                     </div>
                 </div>
                 <div class="card-body col-md-4 mx-auto text-center">
+                    <h5>Detalles del Vehículo Ambulancia</h5>
                     <hr>
                     <table class="table table-sm">
                         <tbody>
@@ -52,6 +83,12 @@
             </div>
 
         </div>
+    </div id="request">
+    <div>
+
+    </div>
+    <div id="response">
+
     </div>
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD_NYgArvBJRyXFVfxt-O71UtH9wJhtVYk&callback=initMap&v=weekly"
@@ -68,7 +105,7 @@
         })
     </script>
     <script>
-        function initMap() {
+        /*function initMap() {
             const directionsService = new google.maps.DirectionsService();
             const directionsRenderer = new google.maps.DirectionsRenderer();
             map = new google.maps.Map(document.getElementById('map'), {
@@ -123,5 +160,109 @@
 
         }
 
-        window.initMap = initMap;
+        window.initMap = initMap;*/
+
+        var directionsService;
+            var directionsRenderer;
+            var bounds;
+            var markersArray = [];
+            var map;
+
+            function initMap() {
+                directionsService = new google.maps.DirectionsService();
+                directionsRenderer = new google.maps.DirectionsRenderer();
+                bounds = new google.maps.LatLngBounds();
+                map = new google.maps.Map(document.getElementById("map"), {
+                    styles: [
+                        {
+                            featureType: "poi.business",
+                            stylers: [{ visibility: "off" }],
+                        },
+                        {
+                            featureType: "transit",
+                            elementType: "labels.icon",
+                            stylers: [{ visibility: "off" }],
+                        },
+                    ],
+                    zoomControl: true,
+                    mapTypeControl: false,
+                    scaleControl: true,
+                    streetViewControl: false,
+                    rotateControl: false,
+                });
+
+                directionsRenderer.setMap(map);
+
+                // initialize services
+                const geocoder = new google.maps.Geocoder();
+                const service = new google.maps.DistanceMatrixService();
+
+                // obtain and show initial position
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                }
+
+                // update position every second
+                setInterval(() => {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                }, 1000);
+
+                function showPosition(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    //map.setCenter(new google.maps.LatLng(lat, lng));
+
+                    const origin1 = { lat, lng };
+                    const destinationB = { lat: -17.399747, lng: -66.192552 };
+                    const request = {
+                        origins: [origin1],
+                        destinations: [destinationB],
+                        travelMode: google.maps.TravelMode.DRIVING,
+                        unitSystem: google.maps.UnitSystem.METRIC,
+                        avoidHighways: false,
+                        avoidTolls: false,
+                    };
+
+                    // driving
+                    directionsService.route(
+                        {
+                            origin: origin1,
+                            destination: destinationB,
+                            travelMode: "DRIVING",
+                        },
+                        (response, status) => {
+                            if (status === "OK") {
+                                directionsRenderer.setDirections(response);
+                            } else {
+                                window.alert("Directions request failed due to " + status);
+                            }
+                        }
+                    );
+
+                    // put request on page
+                    //console.log(request);
+
+                    // put response
+                    service.getDistanceMatrix(request, (response) => {
+                        var origen = response.originAddresses[0];
+                        var destino = response.destinationAddresses[0];
+                        var distancia = response.rows[0].elements[0].distance.text;
+                        var duracion = response.rows[0].elements[0].duration.text;
+
+                        var actual = document.getElementById('actual')
+                        var dest = document.getElementById('destino');
+                        var dist = document.getElementById('distancia');
+                        var dur = document.getElementById('duracion')
+                        actual.textContent = origen;
+                        dest.textContent = destino;
+                        dist.textContent = distancia;
+                        dur.textContent = duracion;
+
+                    });
+                }
+            }
+
+            // Call initMap once the Google Maps API has loaded
+            google.maps.event.addDomListener(window, "load", initMap);
+
     </script>
